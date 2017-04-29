@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    I_dont_have_a_website_that_I_want_to_share_with_you
-// @version      0.8
+// @version      0.9
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
 // @match        https://*.avabur.com/game.php
@@ -28,17 +28,22 @@ var perHourSize = "12";     // Default is 14
 /**************** END USER OPTIONS ****************/
 /**************************************************/
 
-var peopleMod = {}, questNoticeOn = false, numBattles = 0, numRounds = 0, numAttacks = 0, numMulti = 0, numHits = 0, numMisses = 0, 
-    numUntrackedHits = 0, numCrits = 0, numUntrackedCrits = 0, numCounters = 0, numSpells = 0, 
-    numHeals = 0, numHealableRounds = 0, numEvade = 0, numAttacksTaken = 0, 
-    hitTot = 0, hitMax = 0, hitMin = 999999999, hitAvg = 0, 
-    critTot = 0, critMax = 0, critMin = 999999999, critAvg = 0, 
-    spellTot = 0, spellMax = 0, spellMin = 999999999, spellAvg = 0, 
-    counterTot = 0, counterMax = 0, counterMin = 999999999, counterAvg = 0, 
-    healTot = 0, healMax = 0, healMin = 999999999, healAvg = 0;
+var peopleMod = {}, storageAvailable = false, questNoticeOn = false, battleStats;
 
-    if(localStorage.peopleMod)
+    // Will setup battleStats object
+    resetBattleStats();
+    
+    // Check if localStorage is available
+    storageAvailable = checkLocalStorage();
+
+    if(storageAvailable && localStorage.peopleMod)
         peopleMod = JSON.parse(localStorage.peopleMod);
+    
+    if(storageAvailable && localStorage.battleStats) {
+        battleStats = JSON.parse(localStorage.battleStats);
+    }
+        
+        
     
 // THIS SECTION RUNS ONCE WHEN THE PAGE LOADS
 $(function() {
@@ -49,8 +54,10 @@ $(function() {
         addChatColorPicker();
     if(ENABLE_XP_GOLD_RESOURCE_PER_HOUR)
         addTimeCounter();
-    if(ENABLE_BATTLE_TRACKER)
+    if(ENABLE_BATTLE_TRACKER) {
         addBattleTracker();
+        displayBattleTracker();
+    }        
     if(ENABLE_CLAN_DONATION_TABLE_MOD)
         addClanDonationMod();
     if(ENABLE_INGREDIENT_TRACKER)
@@ -75,6 +82,8 @@ $( document ).ajaxComplete(function( event, xhr, settings ) {
         parseResetSessionStatsPhp();
     else if (settings.url == "boosts.php")
         parseBoostsPhp(JSON.parse(xhr.responseText));
+    if(settings.url == "reset_session_stats.php" && ENABLE_BATTLE_TRACKER)
+        resetBattleStats();
 });
 
 // FUNCTIONS TO ADD GUI AREAS TO THE DOM
@@ -131,6 +140,10 @@ function addChatColorPicker() {
     });
     observer.observe($('#chatMessageList')[0], { childList: true, characterData: true});
     observer.observe($('#profileOptionTooltip')[0], { attributes: true, characterData: true});
+}
+
+function checkLocalStorage() {
+    return !!window.localStorage;
 }
 
 function addBattleTracker() {
@@ -320,128 +333,176 @@ function parseAutobattlePhp(battle) {
     if(battle.b.bt === null || !ENABLE_BATTLE_TRACKER)
         return;
 
-    numBattles ++;
-    numRounds += battle.b.ro;
-    numAttacksTaken += battle.b.p.d + battle.b.m.h;
+    battleStats.numBattles ++;
+    battleStats.numRounds += battle.b.ro;
+    battleStats.numAttacksTaken += battle.b.p.d + battle.b.m.h;
     
-    numCounters += battle.b.p.ca;
-    counterTot += battle.b.p.cd;
-    counterAvg = (counterTot / numCounters).toFixed(0);
-    numSpells += battle.b.p.sc;
-    spellTot += battle.b.p.sd;
-    spellAvg = (spellTot / numSpells).toFixed(0);
-    numHeals += battle.b.p.hep;
-    healTot += battle.b.p.he;
-    healAvg = (healTot / numHeals).toFixed(0);
-    numEvade += battle.b.p.d;
+    battleStats.numCounters += battle.b.p.ca;
+    battleStats.counterTot += battle.b.p.cd;
+    battleStats.counterAvg = (battleStats.counterTot / battleStats.numCounters).toFixed(0);
+    battleStats.numSpells += battle.b.p.sc;
+    battleStats.spellTot += battle.b.p.sd;
+    battleStats.spellAvg = (battleStats.spellTot / battleStats.numSpells).toFixed(0);
+    battleStats.numHeals += battle.b.p.hep;
+    battleStats.healTot += battle.b.p.he;
+    battleStats.healAvg = (battleStats.healTot / battleStats.numHeals).toFixed(0);
+    battleStats.numEvade += battle.b.p.d;
     
     var takenDamage = false;
     // Loop through the actions.
     for (var act of battle.b.bt) {
         if(act.npc === null)
             if(act.type == "heal") {
-                healMax = Math.max(healMax, act.dmg);
-                healMin = Math.min(healMin, act.dmg);
+                battleStats.healMax = Math.max(battleStats.healMax, act.dmg);
+                battleStats.healMin = Math.min(battleStats.healMin, act.dmg);
             }
             else if(act.type == "counter") {
-                counterMax = Math.max(counterMax, act.dmg);
-                counterMin = Math.min(counterMin, act.dmg);
+                battleStats.counterMax = Math.max(battleStats.counterMax, act.dmg);
+                battleStats.counterMin = Math.min(battleStats.counterMin, act.dmg);
             }
             else if(act.type == "spell") {
-                spellMax = Math.max(spellMax, act.dmg);
-                spellMin = Math.min(spellMin, act.dmg);
+                battleStats.spellMax = Math.max(battleStats.spellMax, act.dmg);
+                battleStats.spellMin = Math.min(battleStats.spellMin, act.dmg);
             }
             else if(act.type == "hit") {
                 // Track other variables
-                numAttacks += act.hits + act.misses;
-                numHits += act.hits;
-                numMisses += act.misses;
-                numCrits += act.crit;
+                battleStats.numAttacks += act.hits + act.misses;
+                battleStats.numHits += act.hits;
+                battleStats.numMisses += act.misses;
+                battleStats.numCrits += act.crit;
                 if(act.hits + act.misses > 1) {
-                    numMulti += act.hits + act.misses - 1;
+                    battleStats.numMulti += act.hits + act.misses - 1;
                     // If all attacks in multi are crit, add to crit total. Min/Max not tracked across multistrike.
                     if(act.hits == act.crit)
-                        critTot += act.dmg;
+                        battleStats.critTot += act.dmg;
                     // If no attacks in multi are crit, add to hit total. Min/Max not tracked across multistrike.
                     else if(!act.crit)
-                        hitTot += act.dmg;
+                        battleStats.hitTot += act.dmg;
                     // If some attacks in multi are crit but not all, we cannot track totals properly so tally up untracked hits to get a proper average.
                     else {
-                        numUntrackedHits += act.hits;
-                        numUntrackedCrits += act.crit;
+                        battleStats.numUntrackedHits += act.hits;
+                        battleStats.numUntrackedCrits += act.crit;
                     }
                 }
                 else if(act.crit) {
-                    critTot += act.dmg;
-                    critMax = Math.max(critMax, act.dmg);
-                    critMin = Math.min(critMin, act.dmg);
-                    critAvg = (critTot / (numCrits - numUntrackedCrits)).toFixed(0);
+                    battleStats.critTot += act.dmg;
+                    battleStats.critMax = Math.max(battleStats.critMax, act.dmg);
+                    battleStats.critMin = Math.min(battleStats.critMin, act.dmg);
+                    battleStats.critAvg = (battleStats.critTot / (battleStats.numCrits - battleStats.numUntrackedCrits)).toFixed(0);
                 }
                 else {
-                    hitTot += act.dmg;
-                    hitMax = Math.max(hitMax, act.dmg);
+                    battleStats.hitTot += act.dmg;
+                    battleStats.hitMax = Math.max(battleStats.hitMax, act.dmg);
                     if(act.dmg)
-                        hitMin = Math.min(hitMin, act.dmg);
-                    hitAvg = (hitTot / (numHits - numCrits - numUntrackedHits + numUntrackedCrits)).toFixed(0);
+                        battleStats.hitMin = Math.min(battleStats.hitMin, act.dmg);
+                        battleStats.hitAvg = (battleStats.hitTot / (battleStats.numHits - battleStats.numCrits - battleStats.numUntrackedHits + battleStats.numUntrackedCrits)).toFixed(0);
                 }
             }
             else
-                console.log("Unknown player attack type: " + act.type + ": " + xhr.responseText);
+                console.log("Unknown player attack type: " + act.type + ": ", act);
         else
             if(act.type == "hit") {
                 if(act.hits && act.dmg)
-                    takenDamage = true;
-                if(takenDamage)
-                    numHealableRounds ++;
+                    battleStats.takenDamage = true;
+                if(battleStats.takenDamage)
+                    battleStats.numHealableRounds ++;
             }
             else
-                console.log("Unknown enemy attack type: " + act.type + ": " + xhr.responseText);
+                console.log("Unknown enemy attack type: " + act.type + ": ", act);
     }
     if(!battle.b.r)
-        numHealableRounds --;
-    
+        battleStats.numHealableRounds --;
+        
+    saveBattleStats();
+    displayBattleTracker();
+}
+
+function displayBattleTracker() {
     // Update the table in the battle tracker window
-    $('#battleTrackerBattles').text(numBattles);
-    $('#battleTrackerRounds').text(numRounds);
-    $('#battleTrackerHitCnt').text(numHits + ' / ' + numAttacks);
-    $('#battleTrackerHitPerc').text((numHits * 100 / numAttacks).toFixed(2) + " %");
-    if(numHits) {
-        $('#battleTrackerHitMin').text(hitMin);
-        $('#battleTrackerHitMax').text(hitMax);
-        $('#battleTrackerHitAvg').text(hitAvg);
+    $('#battleTrackerBattles').text(battleStats.numBattles);
+    $('#battleTrackerRounds').text(battleStats.numRounds);
+    $('#battleTrackerHitCnt').text(battleStats.numHits + ' / ' + battleStats.numAttacks);
+    $('#battleTrackerHitPerc').text((battleStats.numHits * 100 / battleStats.numAttacks).toFixed(2) + " %");
+    if(battleStats.numHits) {
+        $('#battleTrackerHitMin').text(battleStats.hitMin);
+        $('#battleTrackerHitMax').text(battleStats.hitMax);
+        $('#battleTrackerHitAvg').text(battleStats.hitAvg);
     }
-    $('#battleTrackerCritCnt').text(numCrits + ' / ' + numHits);
-    $('#battleTrackerCritPerc').text((numCrits * 100 / numHits).toFixed(2) + " %");
-    if(numCrits) {
-        $('#battleTrackerCritMin').text(critMin);
-        $('#battleTrackerCritMax').text(critMax);
-        $('#battleTrackerCritAvg').text(critAvg);
+    else {
+        $('#battleTrackerHitMin').text("");
+        $('#battleTrackerHitMax').text("");
+        $('#battleTrackerHitAvg').text("");
     }
-    $('#battleTrackerSpellCnt').text(numSpells + ' / ' + numHits);
-    $('#battleTrackerSpellPerc').text((numSpells * 100 / numHits).toFixed(2) + " %");
-    if(numSpells) {
-        $('#battleTrackerSpellMin').text(spellMin);
-        $('#battleTrackerSpellMax').text(spellMax);
-        $('#battleTrackerSpellAvg').text(spellAvg);
+    $('#battleTrackerCritCnt').text(battleStats.numCrits + ' / ' + battleStats.numHits);
+    $('#battleTrackerCritPerc').text((battleStats.numCrits * 100 / battleStats.numHits).toFixed(2) + " %");
+    if(battleStats.numCrits) {
+        $('#battleTrackerCritMin').text(battleStats.critMin);
+        $('#battleTrackerCritMax').text(battleStats.critMax);
+        $('#battleTrackerCritAvg').text(battleStats.critAvg);
     }
-    $('#battleTrackerCounterCnt').text(numCounters + ' / ' + numAttacksTaken);
-    $('#battleTrackerCounterPerc').text((numCounters * 100 / numAttacksTaken).toFixed(2) + " %");
-    if(numCounters) {
-        $('#battleTrackerCounterMin').text(counterMin);
-        $('#battleTrackerCounterMax').text(counterMax);
-        $('#battleTrackerCounterAvg').text(counterAvg);
+    else {
+        $('#battleTrackerCritMin').text("");
+        $('#battleTrackerCritMax').text("");
+        $('#battleTrackerCritAvg').text("");
     }
-    $('#battleTrackerHealCnt').text(numHeals + ' / ' + numHealableRounds);
-    $('#battleTrackerHealPerc').text((numHeals * 100 / numHealableRounds).toFixed(2) + " %");
-    if(numHeals) {
-        $('#battleTrackerHealMin').text(healMin);
-        $('#battleTrackerHealMax').text(healMax);
-        $('#battleTrackerHealAvg').text(healAvg);
+    $('#battleTrackerSpellCnt').text(battleStats.numSpells + ' / ' + battleStats.numHits);
+    $('#battleTrackerSpellPerc').text((battleStats.numSpells * 100 / battleStats.numHits).toFixed(2) + " %");
+    if(battleStats.numSpells) {
+        $('#battleTrackerSpellMin').text(battleStats.spellMin);
+        $('#battleTrackerSpellMax').text(battleStats.spellMax);
+        $('#battleTrackerSpellAvg').text(battleStats.spellAvg);
     }
-    $('#battleTrackerMultiCnt').text(numMulti + ' / ' + numRounds);
-    $('#battleTrackerMultiPerc').text((numMulti * 100 / numRounds).toFixed(2) + " %");
-    $('#battleTrackerEvadeCnt').text(numEvade + ' / ' + numAttacksTaken);
-    $('#battleTrackerEvadePerc').text((numEvade * 100 / numAttacksTaken).toFixed(2) + " %");
+    else {
+        $('#battleTrackerSpellMin').text("");
+        $('#battleTrackerSpellMax').text("");
+        $('#battleTrackerSpellAvg').text("");
+    }
+    $('#battleTrackerCounterCnt').text(battleStats.numCounters + ' / ' + battleStats.numAttacksTaken);
+    $('#battleTrackerCounterPerc').text((battleStats.numCounters * 100 / battleStats.numAttacksTaken).toFixed(2) + " %");
+    if(battleStats.numCounters) {
+        $('#battleTrackerCounterMin').text(battleStats.counterMin);
+        $('#battleTrackerCounterMax').text(battleStats.counterMax);
+        $('#battleTrackerCounterAvg').text(battleStats.counterAvg);
+    }
+    else {
+        $('#battleTrackerCounterMin').text("");
+        $('#battleTrackerCounterMax').text("");
+        $('#battleTrackerCounterAvg').text("");
+    }
+    $('#battleTrackerHealCnt').text(battleStats.numHeals + ' / ' + battleStats.numHealableRounds);
+    $('#battleTrackerHealPerc').text((battleStats.numHeals * 100 / battleStats.numHealableRounds).toFixed(2) + " %");
+    if(battleStats.numHeals) {
+        $('#battleTrackerHealMin').text(battleStats.healMin);
+        $('#battleTrackerHealMax').text(battleStats.healMax);
+        $('#battleTrackerHealAvg').text(battleStats.healAvg);
+    }
+    else {
+        $('#battleTrackerHealMin').text("");
+        $('#battleTrackerHealMax').text("");
+        $('#battleTrackerHealAvg').text("");
+    }
+    $('#battleTrackerMultiCnt').text(battleStats.numMulti + ' / ' + battleStats.numRounds);
+    $('#battleTrackerMultiPerc').text((battleStats.numMulti * 100 / battleStats.numRounds).toFixed(2) + " %");
+    $('#battleTrackerEvadeCnt').text(battleStats.numEvade + ' / ' + battleStats.numAttacksTaken);
+    $('#battleTrackerEvadePerc').text((battleStats.numEvade * 100 / battleStats.numAttacksTaken).toFixed(2) + " %");
+}
+
+function resetBattleStats() {
+    battleStats = { numBattles: 0, 
+        numRounds: 0, numAttacks: 0, numMulti: 0, numHits: 0, numMisses: 0, 
+        numUntrackedHits: 0, numCrits: 0, numUntrackedCrits: 0, numCounters: 0, 
+        numSpells: 0, numHeals: 0, numHealableRounds: 0, numEvade: 0, numAttacksTaken: 0,
+        hitTot: 0, hitMax: 0, hitMin: 999999999, hitAvg: 0, critTot: 0, critMax: 0,
+        critMin: 999999999, critAvg: 0, spellTot: 0, spellMax: 0, spellMin: 999999999, spellAvg: 0,
+        counterTot: 0, counterMax: 0, counterMin: 999999999, counterAvg: 0,
+        healTot: 0, healMax: 0, healMin: 999999999, healAvg: 0 };
+        saveBattleStats();
+        displayBattleTracker();
+}
+function saveBattleStats() {
+    if(storageAvailable) {
+        localStorage.battleStats = JSON.stringify(battleStats);
+    }
 }
 
 function parseAutoTradePhp(harvest) {
