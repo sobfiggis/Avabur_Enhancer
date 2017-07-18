@@ -313,11 +313,11 @@ function parseAutocraftPhp(craft) {
             incrementCell('numCrafts');
 
             if(craft.a.qf.indexOf("The Questmaster") > -1){
-            incrementCell('numQuestC');
+                incrementCell('numQuestC');
             }
 
             if(craft.a.qf.indexOf("You found") > -1){
-            incrementCell('itemQuestC');
+                incrementCell('itemQuestC');
             }
 
             if(craft.a.sr) {
@@ -357,27 +357,32 @@ function parseAutocraftPhp(craft) {
 }
 
 function parseAutobattlePhp(battle) {
-    if(ENABLE_QUEST_COMPLETE_NOTICE && battle.b.qf.indexOf("You have completed your quest!  Visit the") > -1)
+    if(ENABLE_QUEST_COMPLETE_NOTICE && battle.b.qf.indexOf("You have completed your quest!  Visit the") > -1) {
         fadeOutNonQuest();
-    else if(questNoticeOn)
+    }
+    else if(questNoticeOn) {
         fadeInNonQuest();
+    }
 
     // An ingredient has dropped for Ingredient Tracker
     if(battle.b.ir && ENABLE_INGREDIENT_TRACKER) {
         if(typeof Storage !== "undefined") {
-            if(!localStorage.LocDrops)
+            if(!localStorage.LocDrops) {
                 localStorage.LocDrops = "{}";
+            }
             var item = (battle.b.ir).replace(/\+|<.*?>/img, "");
             var enemy = battle.b.m.n;
             var drops = JSON.parse(localStorage.LocDrops);
-            if(drops[item] === undefined)
+            if(drops[item] === undefined) {
                 drops[item] = {};
+            }
             drops[item][enemy] = "";
             localStorage.LocDrops = JSON.stringify(drops);
         }
-        else
+        else {
             console.log("No Web Storage support to track drops.");
         $('#ingredientDropList').html(loadIngredientDropList());
+        }
     }
 
     // Battle was won and Drop Tracker enabled
@@ -385,13 +390,12 @@ function parseAutobattlePhp(battle) {
         incrementCell('numKills');
 
         if(battle.b.qf.indexOf("The Questmaster") > -1){
-        incrementCell('numQuestK');
+            incrementCell('numQuestK');
         }
 
         if(battle.b.qf.indexOf("You found") > -1){
-        incrementCell('itemQuestK');
+            incrementCell('itemQuestK');
         }
-
 
         // This means an ingredient has dropped
         if(battle.b.ir)
@@ -490,11 +494,13 @@ function parseAutobattlePhp(battle) {
                 if(act.hits + act.misses > 1) {
                     numMulti += act.hits + act.misses - 1;
                     // If all attacks in multi are crit, add to crit total. Min/Max not tracked across multistrike.
-                    if(act.hits == act.crit)
+                    if(act.hits == act.crit) {
                         critTot += act.dmg;
+                    }
                     // If no attacks in multi are crit, add to hit total. Min/Max not tracked across multistrike.
-                    else if(!act.crit)
+                    else if(!act.crit) {
                         hitTot += act.dmg;
+                    }
                     // If some attacks in multi are crit but not all, we cannot track totals properly so tally up untracked hits to get a proper average.
                     else {
                         numUntrackedHits += act.hits;
@@ -510,25 +516,32 @@ function parseAutobattlePhp(battle) {
                 else {
                     hitTot += act.dmg;
                     hitMax = Math.max(hitMax, act.dmg);
-                    if(act.dmg)
+                    if(act.dmg) {
                         hitMin = Math.min(hitMin, act.dmg);
+                    }
                     hitAvg = (hitTot / (numHits - numCrits - numUntrackedHits + numUntrackedCrits)).toFixed(0);
                 }
             }
-            else
+            else {
                 console.log("Unknown player attack type: " + act.type + ": " + xhr.responseText);
-        else
-            if(act.type == "hit") {
-                if(act.hits && act.dmg)
-                    takenDamage = true;
-                if(takenDamage)
-                    numHealableRounds ++;
             }
-            else
+        else {
+            if(act.type == "hit") {
+                if(act.hits && act.dmg) {
+                    takenDamage = true;
+                }
+                if(takenDamage) {
+                    numHealableRounds ++;
+                }
+            }
+            else {
                 console.log("Unknown enemy attack type: " + act.type + ": " + xhr.responseText);
+            }
+        }
     }
-    if(!battle.b.r)
+    if(!battle.b.r) {
         numHealableRounds --;
+    }
 
     // Update the table in the battle tracker window
     $('#battleTrackerBattles').text(numBattles);
@@ -575,10 +588,12 @@ function parseAutobattlePhp(battle) {
 }
 
 function parseAutoTradePhp(harvest) {
-    if(ENABLE_QUEST_COMPLETE_NOTICE && harvest.a.qf.indexOf("You have completed your quest!  Visit the") > -1)
+    if(ENABLE_QUEST_COMPLETE_NOTICE && harvest.a.qf.indexOf("You have completed your quest!  Visit the") > -1) {
         fadeOutNonQuest();
-    else if(questNoticeOn)
+    }
+    else if(questNoticeOn) {
         fadeInNonQuest();
+    }
 
     // Track Location Drops
     if(ENABLE_INGREDIENT_TRACKER) {
@@ -589,13 +604,15 @@ function parseAutoTradePhp(harvest) {
                 if(!localStorage.LocDrops)
                     localStorage.LocDrops = "{}";
                 var drops = JSON.parse(localStorage.LocDrops);
-                if(drops[item] === undefined)
+                if(drops[item] === undefined) {
                     drops[item] = {};
+                }
                 drops[item][tool] = "";
                 localStorage.LocDrops = JSON.stringify(drops);
             }
-            else
+            else {
                 console.log("No Web Storage support to track drops.");
+            }
             $('#ingredientDropList').html(loadIngredientDropList());
         }
     }
@@ -613,11 +630,13 @@ function parseAutoTradePhp(harvest) {
         }
 
         // This means an ingredient has dropped
-        if(harvest.a.ir)
+        if(harvest.a.ir) {
             incrementCell('numIngredientsH');
+        }
 
-        if(harvest.a.ir)
+        if(harvest.a.ir) {
             incrementCell('numQuestH');
+        }
 
         // This means a stat has dropped
         if(harvest.a.sr) {
@@ -633,7 +652,7 @@ function parseAutoTradePhp(harvest) {
             incrementCell(id);
         }
         // counts platinum coins found while harvesting
-        if(harevest.a.dr && (harevest.a.dr.indexOf("platinum coins") > -1)){
+        if(harevest.a.dr && (harevest.a.dr.indexOf("platinum coins") > -1)) {
             var id = 'platTotalH';
             var platInc = Number((harvest.a.dr.match(/(\d+|\d{1,3}(,\d{3})*)(\.\d+)? platinum coin/)[1] || 0));
             var cutoff = harvest.a.dr.indexOf('platinum coin');
@@ -703,8 +722,9 @@ function calcPercentCells() {
     $('.percent').each(function(){
         var idN = parseInt($('.' + $(this).attr('data-n')).first().text());
         var idD = parseInt($('.' + $(this).attr('data-d')).first().text());
-        if(idD != 0)
+        if(idD != 0) {
             $(this).text((idN * 100 / idD).toFixed(2));
+        }
     });
 }
 
@@ -754,7 +774,6 @@ function timeCounter() {
     }
 
     if(ENABLE_DROP_TRACKER) {
-
         // starting here, this is the quest length calculator
         var diffSec = Math.round((Date.now() - Number($('#dropsTableTimer .timeCounter').first().attr('title'))) / 1000);
         var timeInSeconds = Math.floor(diffSec);
@@ -771,27 +790,24 @@ function timeCounter() {
             var qP = Number($(".itemQuestK").text());
             tfq = Math.floor((tfq / (qP / numKills)));
             // if quest timer is below 60, use minutes
-            if(tfq < 60){
-            $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
+            if (tfq < 60) {
+               $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
             }
             // if quest timer is above 59, use hours and minutes.
-            else if(tfq > 59){
+            else if (tfq > 59) {
                 var hourz = ((tfq - (tfq % 60)) / 60);
                 tfq = (tfq - (hourz * 60));
                 $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (tfq).toString() + " minutes left.");
             }
-        }
-
-        else{
-
+        } else {
             tfq = Math.floor(((timeForQuest * 10) / 10));
 
             // if quest time is below 60, use minutes
-            if(tfq < 60){
-            $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
+            if (tfq < 60) {
+                $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
             }
             // if quest timer is above 59 minutes use hrs and minutes.
-            else if(tfq > 59){
+            else if (tfq > 59) {
                 var hourz = ((tfq - (tfq % 60)) / 60);
                 tfq = (tfq - (hourz * 60));
                 $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (tfq).toString() + " minutes left.");
@@ -815,13 +831,15 @@ function timeCounter() {
 
 function loadIngredientDropList() {
     var dropList = "";
-    if(!localStorage.LocDrops || localStorage.LocDrops == "{}")
+    if(!localStorage.LocDrops || localStorage.LocDrops == "{}") {
         return "";
+    }
     var drops = JSON.parse(localStorage.LocDrops);
     for (var drop in drops) {
         dropList += '<tr><td rowspan="' + Object.keys(drops[drop]).length + '">' + drop + '</td>';
-        for(var enemy in drops[drop])
+        for(var enemy in drops[drop]) {
             dropList += "<td>" + enemy + "</td></tr><tr>";
+        }
         dropList = dropList.slice(0, -4);
     }
     return dropList;
@@ -843,11 +861,11 @@ function savePeopleMod() {
 
 function modChatColors() {
     $('#chatMessageList').find('.profileLink').each(function() {
-        if($(this).text() in peopleMod) {
+        if ($(this).text() in peopleMod) {
             var text = $(this).next();
             // Check if this is main channel by the text of the 3rd span. Whispers are special cases, other non-main channels start a [channelName] output.
             var e = $(this).closest('li').find('span:eq(2)').text();
-            if(e.indexOf('Whisper') == -1 && e != '[')
+            if (e.indexOf('Whisper') == -1 && e != '[')
                 text.css('color', peopleMod[$(this).text()]);
         }
     });
@@ -856,9 +874,7 @@ function modChatColors() {
 // This adds the market quick sell button.
 function addMarketButton(){
     $('#marketSell').parent().after('<div class="col-md-4 mt10"><input id="quickSell" value="Quick Sell" type="button" style="width: 80%; padding: 1.5px !important;"></div>');
-
-    $('#quickSell').click(function ()
-        {
+    $('#quickSell').click(function () {
             var sPrice = $('.marketListings').closest('table').find(' tbody tr td:nth-child(2)').eq(0).text().replace( /\D+/g, '');
             var amount = $('#currentCurrency').text().replace( /\D+/g, '');
             $('#sellingPrice').val( $('#sellingPrice').val() + (sPrice - 1) );
@@ -874,13 +890,11 @@ if($("#quicksIngred").length < 1){
     $("#marketIngredientSell").parent().after('<div class="center"><input id="quicksIngred" value="Quick Sell" type="button"></div>');
 }
 
-$('#quicksIngred').click(function ()
-    {
+$('#quicksIngred').click(function () {
         var sPrice = $('#modal2Content').find($('.marketListings')).find('tbody tr:nth-child(1) td:nth-child(2)').eq(0).text().replace( /\D+/g, '');
         var amount = $('#modal2Content').find('div:first').text().replace( /\D+/g, '');
         $('#marketPrice').val( $('#marketPrice').val() + (sPrice - 1) );
         $('#marketIngredientAmount').val( $('#marketIngredientAmount').val() + amount );
-
         $("#marketIngredientSell").click();
     });
 }
