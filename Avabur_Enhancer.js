@@ -587,17 +587,18 @@ function parseAutoTradePhp(harvest) {
         // counts platinum coins found while harvesting
         if(harevest.a.dr && (harevest.a.dr.indexOf("platinum coins") > -1)){
             var id = 'platTotalH';
-            var platInc = Number((harvest.a.dr.match(/(\d+|\d{1,3}(,\d{3})*)(\.\d+)? platinum coins/)[1] || 0));
-            for(var i=1; i<=platInc; i++){
-                incrementCell(id);
-            }
+            var platInc = Number((harvest.a.dr.match(/(\d+|\d{1,3}(,\d{3})*)(\.\d+)? platinum coin/)[1] || 0));
+            var cutoff = harvest.a.dr.indexOf('platinum coin');
+            var platInc = harvest.a.dr.substring(0, cutoff);
+            var platT = platInc.replace( /\D+/g, '');
+            incrementC(id, Number(platT));
         }
 
         // This means loot has dropped
         if(harvest.a.dr) {
             incrementCell('numLootH');
             var id = "";
-            switch(/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(harvest.a.dr).splice(1,2).join("")) {
+            switch(/(Tooltip).*?>|>.*?(gold coin|crafting|gem frag|crystal).*?</.exec(harvest.a.dr).splice(1,2).join("")) {
                 case 'Tooltip': id = "gearH"; break;
                 case 'gold coin': id = "goldH"; break;
                 case 'crafting': id = "craftH"; break;
