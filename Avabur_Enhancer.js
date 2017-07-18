@@ -64,8 +64,8 @@ var counterMin = 999999999;
 var counterAvg = 0;
 var healTot = 0;
 var healMax = 0;
+var healAvg = 0;
 var healMin = 999999999;
-healAvg = 0;
 
 if (localStorage.peopleMod) {
     peopleMod = JSON.parse(localStorage.peopleMod);
