@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Avabur Enhancer
-// @namespace    I_dont_have_a_website_that_I_want_to_share_with_you
+// @namespace    https://github.com/sobfiggis/Avabur_Enhancer
 // @version      0.9.1
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
@@ -29,17 +29,47 @@ var perHourSize = "12";     // Default is 14
 /**************** END USER OPTIONS ****************/
 /**************************************************/
 
-var peopleMod = {}, questNoticeOn = false, numBattles = 0, numRounds = 0, numAttacks = 0, numMulti = 0, numHits = 0, numMisses = 0,
-    numUntrackedHits = 0, numCrits = 0, numUntrackedCrits = 0, numCounters = 0, numSpells = 0,
-    numHeals = 0, numHealableRounds = 0, numEvade = 0, numAttacksTaken = 0,
-    hitTot = 0, hitMax = 0, hitMin = 999999999, hitAvg = 0,
-    critTot = 0, critMax = 0, critMin = 999999999, critAvg = 0,
-    spellTot = 0, spellMax = 0, spellMin = 999999999, spellAvg = 0,
-    counterTot = 0, counterMax = 0, counterMin = 999999999, counterAvg = 0,
-    healTot = 0, healMax = 0, healMin = 999999999, healAvg = 0;
+var peopleMod = {};
+var questNoticeOn = false;
+var numBattles = 0;
+var numRounds = 0;
+var numAttacks = 0;
+var numMulti = 0;
+var numHits = 0;
+var numMisses = 0;
+var numUntrackedHits = 0;
+var numCrits = 0;
+var numUntrackedCrits = 0;
+var numCounters = 0;
+var numSpells = 0;
+var numHeals = 0;
+var numHealableRounds = 0;
+var numEvade = 0;
+var numAttacksTaken = 0;
+var hitTot = 0;
+var hitMax = 0;
+var hitMin = 999999999;
+var hitAvg = 0;
+var critTot = 0;
+var critMax = 0;
+var critMin = 999999999;
+var critAvg = 0;
+var spellTot = 0;
+var spellMax = 0;
+var spellMin = 999999999;
+var spellAvg = 0;
+var counterTot = 0;
+var counterMax = 0;
+var counterMin = 999999999;
+var counterAvg = 0;
+var healTot = 0;
+var healMax = 0;
+var healMin = 999999999;
+healAvg = 0;
 
-    if(localStorage.peopleMod)
-        peopleMod = JSON.parse(localStorage.peopleMod);
+if(localStorage.peopleMod) {
+    peopleMod = JSON.parse(localStorage.peopleMod);
+}
 
 // THIS SECTION RUNS ONCE WHEN THE PAGE LOADS
 $(function() {
@@ -110,7 +140,7 @@ function addChatColorPicker() {
         allowEmpty: true,
         clickoutFiresChange: false,
         change: function(color) {
-            if(color == null && ($('#profileOptionUsername').text() in peopleMod)) {
+            if(color === null && ($('#profileOptionUsername').text() in peopleMod)) {
                 peopleMod[$('#profileOptionUsername').text()] = 'white';
                 modChatColors();
                 delete peopleMod[$('#profileOptionUsername').text()];
