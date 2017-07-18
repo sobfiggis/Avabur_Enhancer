@@ -1,4 +1,13 @@
 **Update**  
+
+**v0.9.1**
+
+*   NEW! Drop tracker now contains Crafting section along with a platinum counter, moonlocket quest proc counter, quest item counter.
+*   NEW! Quick sell features added to the market. Will sell all items corresponding to whichever page you're on at lowest market value -1.
+*   NEW! Kills (based on current XP from current battle) until level counter added below exp/hour.
+*   NEW! Quest timer added below the quest counter. Need to reset drop tracker if fatigued/starting item quest to calibrate properly, as it uses data from the drop tracker including quest item drop rate.
+*   BUG FIX! Fixed issue with platinum counters from previous versions which wasn't counting platinum drops.
+
 **v0.8**
 
 *   NEW! Custom chat colors for individual players, with in game interface for assigning a color to a player. _This is for Main chat only and does not effect other channels colors_. Note: In case any of you have not been copying the script header info when you update the script, make sure you notice the _// @require_ line that is well… required.
