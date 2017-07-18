@@ -722,21 +722,32 @@ function timeCounter() {
             tfq = ((timeForQuest * 10) / 10);
             var qP = Number($(".itemQuestK").text());
             tfq = Math.floor((tfq / (qP / numKills)));
+            // if quest timer is below 60, use minutes
+            if(tfq < 60){
             $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
-        }
-        else{
-
-            tfq = Math.floor(((timeForQuest * 10) / 10));
-
-            if(tfq > 59){
+            }
+            // if quest timer is above 59, use hours and minutes.
+            else if(tfq > 59){
                 var hourz = ((tfq - (tfq % 60)) / 60);
                 tfq = (tfq - (hourz * 60));
                 $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (tfq).toString() + " minutes left.");
             }
-            else if(tfq < 60){
+        }
+
+        else{
+
+            tfq = Math.floor(((timeForQuest * 10) / 10));
+
+            // if quest time is below 60, use minutes
+            if(tfq < 60){
             $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
             }
-        //}
+            // if quest timer is above 59 minutes use hrs and minutes.
+            else if(tfq > 59){
+                var hourz = ((tfq - (tfq % 60)) / 60);
+                tfq = (tfq - (hourz * 60));
+                $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (tfq).toString() + " minutes left.");
+            }
         }
 
 
