@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    I_dont_have_a_website_that_I_want_to_share_with_you
-// @version      0.9
+// @version      0.9.1
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
 // @match        https://*.avabur.com/game.php
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
+// @downloadURL  https://raw.githubusercontent.com/sobfiggis/Avabur_Enhancer/master/Avabur_Enhancer.js
 // ==/UserScript==
 
 /**************************************************/
