@@ -74,43 +74,60 @@ if(localStorage.peopleMod) {
 // THIS SECTION RUNS ONCE WHEN THE PAGE LOADS
 $(function() {
     $('head').append('<style>.ui-icon, .ui-widget-content .ui-icon {background-image: none;}.closeCustomWindow {position: absolute;right: -12px;top: -12px;font-size: 20px;text-align: center;border-radius: 40px;border: 1px solid black;background: transparent linear-gradient(to bottom, #008681 0%, #003533 100%) repeat scroll 0% 0%;width: 30px;}.closeCustomWindow a {text-decoration: none;}.customWindowWrapper {display: none;z-index: 99;position: absolute !important;top: 120px;left: 15%;}.customWindowContent {padding: 5px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px}.customWindowContent table {width: 100%;font-size: 12px;}.customWindowContent tbody {border: 1px solid #01B0AA;border-top: none;}.customWindowContent th {text-align: center;color: #FF7;border: 1px solid #01B0AA;}.customWindowContent thead th {background-color: #01736D;font-size: 14px;}.customWindowContent td {text-align: center;}.customWindowContent .bRight {border-right: 1px solid #01B0AA;}</style>');
-    if(ENABLE_CHAT_BATTLE_SWAP)
+    if(ENABLE_CHAT_BATTLE_SWAP) {
         addChatSwap();
-    if(ENABLE_CHAT_USER_COLOR_PICKER)
+    }
+    if(ENABLE_CHAT_USER_COLOR_PICKER) {
         addChatColorPicker();
-    if(ENABLE_XP_GOLD_RESOURCE_PER_HOUR)
+    }
+    if(ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
         addTimeCounter();
-    if(ENABLE_BATTLE_TRACKER)
+    }
+    if(ENABLE_BATTLE_TRACKER) {
         addBattleTracker();
-    if(ENABLE_CLAN_DONATION_TABLE_MOD)
+    }
+    if(ENABLE_CLAN_DONATION_TABLE_MOD) {
         addClanDonationMod();
-    if(ENABLE_INGREDIENT_TRACKER)
+    }
+    if(ENABLE_INGREDIENT_TRACKER) {
         addIngredientTracker();
-    if(ENABLE_DROP_TRACKER)
+    }
+    if(ENABLE_DROP_TRACKER) {
         addDropTracker();
+    }
     if(ENABLE_XP_GOLD_RESOURCE_PER_HOUR || ENABLE_DROP_TRACKER) {
         timeCounter();
         setInterval(timeCounter, 1000);
     }
-
     addMarketButton();
 
 });
 
 // THIS SECTION IS RUN EVERY TIME THE BROWSER RECEIVES A DYNAMIC UPDATE USING AJAX
 $( document ).ajaxComplete(function( event, xhr, settings ) {
-    if (settings.url == "autobattle.php" && (ENABLE_BATTLE_TRACKER || ENABLE_INGREDIENT_TRACKER))
+    if (settings.url == "autobattle.php" && (ENABLE_BATTLE_TRACKER || ENABLE_INGREDIENT_TRACKER)) {
         parseAutobattlePhp(JSON.parse(xhr.responseText));
-    else if (settings.url == "autotrade.php" && ENABLE_INGREDIENT_TRACKER)
+    }
+    else if (settings.url == "autotrade.php" && ENABLE_INGREDIENT_TRACKER) {
         parseAutoTradePhp(JSON.parse(xhr.responseText));
-    else if (settings.url == "autocraft.php" && ENABLE_INGREDIENT_TRACKER)
+    }
+    else if (settings.url == "autocraft.php" && ENABLE_INGREDIENT_TRACKER) {
         parseAutocraftPhp(JSON.parse(xhr.responseText));
-    else if (settings.url == "clan_donations.php" && ENABLE_CLAN_DONATION_TABLE_MOD)
+    }
+    else if (settings.url == "clan_donations.php" && ENABLE_CLAN_DONATION_TABLE_MOD) {
         parseClanDonationsPhp();
-    else if (settings.url == "reset_session_stats.php" && ENABLE_XP_GOLD_RESOURCE_PER_HOUR)
+    }
+    else if (settings.url == "reset_session_stats.php" && ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
         parseResetSessionStatsPhp();
-    else if (settings.url == "boosts.php")
+    }
+    else if (settings.url == "boosts.php") {
         parseBoostsPhp(JSON.parse(xhr.responseText));
+    }
+    else if (settings.url == "market.php") {
+        $(document).ready(function(){
+            addIngredientButton();
+        }
+    }
 });
 
 // FUNCTIONS TO ADD GUI AREAS TO THE DOM
@@ -868,12 +885,4 @@ $('#quicksIngred').click(function ()
     });
 }
 
-// This lets addon know when you open up ingredient market page.
-$(document).ajaxComplete(function( event, xhr, settings ){
-    if(settings.url == "market.php"){
-        $(document).ready(function(){
-            addIngredientButton();
-        });
-    }
-});
 // End
