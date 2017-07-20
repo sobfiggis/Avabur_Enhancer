@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      0.9.2
+// @version      0.9.3
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
 // @match        https://*.avabur.com/game.php
