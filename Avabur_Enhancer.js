@@ -64,8 +64,8 @@ var counterMin = 999999999;
 var counterAvg = 0;
 var healTot = 0;
 var healMax = 0;
+var healAvg = 0;
 var healMin = 999999999;
-healAvg = 0;
 
 if (localStorage.peopleMod) {
     peopleMod = JSON.parse(localStorage.peopleMod);
@@ -138,6 +138,7 @@ function addTimeCounter() {
     $('#gainsResources').parent().after('<tr class="visible-xs-inline-block visible-sm-inline-block visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="resPerHr" colspan="2" style="text-align: center;"></td></tr>');
     $('#gainsClanResources').parent().after('<tr class="visible-xs-inline-block visible-sm-inline-block visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="clanResPerHr" colspan="2" style="text-align: center;"></td></tr>');
     $('#bq_info').after('<div class="center"><span class="minsToQuest"></span></div>');
+    $('#tq_info').after('<div class="center"><span class="minsToHarvestQuest"></span></div>');
 }
 
 function addChatColorPicker() {
@@ -709,7 +710,7 @@ function parseAutoTradePhp(harvest) {
             incrementCell(id);
         }
         // counts platinum coins found while harvesting
-        if (harevest.a.dr && (harevest.a.dr.indexOf("platinum coins") > -1)) {
+        if (harvest.a.dr && (harvest.a.dr.indexOf("platinum coins") > -1)) {
             var id = 'platTotalH';
             var platInc = Number((harvest.a.dr.match(/(\d+|\d{1,3}(,\d{3})*)(\.\d+)? platinum coin/)[1] || 0));
             var cutoff = harvest.a.dr.indexOf('platinum coin');
@@ -916,6 +917,7 @@ function timeCounter() {
         var timeForQuest = (Number(questTot) - Number(questCur)) / Number(killsPerMin);
         var tfq;
 
+// battle quest calc
         if ($('#bq_info').text().indexOf("Recover") > -1) {
             tfq = ((timeForQuest * 10) / 10);
             var qP = Number($(".itemQuestK").text());
@@ -945,6 +947,29 @@ function timeCounter() {
             }
         }
 
+// harvest quest calculator
+
+        if ($('#tq_info').text().length > -1) {
+            var numHarvs = $('.numHarvests').text();
+            var harvestsPerSec = (Number(numHarvs) / timeInSeconds);
+            var harvestsPerMin = (harvestsPerSec * 60);
+            var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
+            var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
+            var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
+            var tfqh;
+
+            tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
+            // if quest timer is below 60, use minutes
+            if (tfqh < 60) {
+                $('.minsToHarvestQuest').text("Around " + (tfqh).toString() + " minutes left.");
+            }
+            // if quest timer is above 59, use hours and minutes.
+            else if (tfqh > 59) {
+                var hourz = ((tfqh - (tfqh % 60)) / 60);
+                tfqh = (tfqh - (hourz * 60));
+                $('.minsToHarvestQuest').text("Around " + (hourz).toString() + " hrs " + (tfqh).toString() + " minutes left.");
+            }
+        }
 
         // quest time calculator ends here.
 
