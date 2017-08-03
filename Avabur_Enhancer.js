@@ -914,14 +914,15 @@
             var killsPerMin = (killsPerSec * 60);
             var questCur = $('#bq_info').children('span').eq(0).text().replace(/\D+/g, '');
             var questTot = $('#bq_info').children('span').eq(1).text().replace(/\D+/g, '');
+            var timeForQuest = (Number(questTot) - Number(questCur)) / Number(killsPerMin);
             var bQuestReduction = $('.numQuestK').first('td').first('span').text();
-            var timeForQuest = (Number(questTot) - Number((questCur + (questTot * (Number(bQuestReduction) / 100)))) / Number(killsPerMin));
 
             var tfq;
 
     // battle quest calc
             if ($('#bq_info').text().indexOf("Recover") > -1) {
                 tfq = ((timeForQuest * 10) / 10);
+                tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
                 var qP = Number($(".itemQuestK").text());
                 tfq = Math.floor((tfq / (qP / numKills)));
                 // if quest timer is below 60, use minutes
@@ -936,6 +937,7 @@
                 }
             } else {
                 tfq = Math.floor(((timeForQuest * 10) / 10));
+                tfq = Math.floor(tfq - (tfq * (bQuestReduction /100)));
 
                 // if quest time is below 60, use minutes
                 if (tfq < 60) {
@@ -957,15 +959,12 @@
                 var harvestsPerMin = (harvestsPerSec * 60);
                 var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
                 var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
+                var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
                 var hQuestReduction = $('.numQuestH').first('td').first('span').text();
-                var timeForHarvQuest = ((Number(qT) - Number(qC + (qT * (Number(hQuestReduction) / 100)))) / Number(harvestsPerMin));
-
                 var tfqh;
 
-                //tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
-
                 tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
-
+                tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
                 // if quest timer is below 60, use minutes
                 if (tfqh < 60) {
                     $('.minsToHarvestQuest').text("Around " + (tfqh).toString() + " minutes left.");
