@@ -11,8 +11,6 @@
 // ==/UserScript==
 
 /*
-
-	Author: Casey Smith @subTee
 	
 	
   .SYNOPSIS
