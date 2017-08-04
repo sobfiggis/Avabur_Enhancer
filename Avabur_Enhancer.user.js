@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      0.9.2
+// @version      0.9.4
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
 // @match        https://*.avabur.com/game.php
@@ -296,7 +296,7 @@ function addChatSwap() {
     $('<div style="position: absolute;font-size: 14px;color: #01B0AA;left: 12px;cursor: pointer;padding: 1px;" font-size:="">' + arrow + '</div>').prependTo('#areaWrapper>h5').click(function() {
         localStorage.chatmove = !(localStorage.chatmove == "true");
         var e1 = $('#chatWrapper'),
-        		e2 = $('#contentWrapper');
+                e2 = $('#contentWrapper');
         if (localStorage.chatmove == "true") {
             e1 = $('#contentWrapper');
             e2 = $('#chatWrapper');
@@ -670,12 +670,8 @@ function parseAutoTradePhp(harvest) {
     if (ENABLE_DROP_TRACKER) {
         incrementCell('numHarvests');
 
-        if (harvest.a.qf[1].indexOf("The Questmaster") > -1) {
+        if (harvest.a.qf.indexOf("additional") > -1) {
             incrementCell('numQuestH');
-        }
-
-        if (harvest.a.qf[1].indexOf("You found") > -1) {
-            incrementCell('itemQuestH');
         }
 
         // This means an ingredient has dropped
@@ -738,7 +734,7 @@ function parseAutoTradePhp(harvest) {
                     break;
                 case 'crystal':
                     id = "crystalH";
-                		break;
+                        break;
                 default:
                     console.log('Unknown Harvest Loot Drop: ' + harvest.a.dr);
             }
@@ -915,11 +911,14 @@ function timeCounter() {
         var questCur = $('#bq_info').children('span').eq(0).text().replace(/\D+/g, '');
         var questTot = $('#bq_info').children('span').eq(1).text().replace(/\D+/g, '');
         var timeForQuest = (Number(questTot) - Number(questCur)) / Number(killsPerMin);
+        var bQuestReduction = $('.numQuestK').next().find('span').text();
+
         var tfq;
 
 // battle quest calc
         if ($('#bq_info').text().indexOf("Recover") > -1) {
             tfq = ((timeForQuest * 10) / 10);
+            tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
             var qP = Number($(".itemQuestK").text());
             tfq = Math.floor((tfq / (qP / numKills)));
             // if quest timer is below 60, use minutes
@@ -934,6 +933,7 @@ function timeCounter() {
             }
         } else {
             tfq = Math.floor(((timeForQuest * 10) / 10));
+            tfq = Math.floor(tfq - (tfq * (bQuestReduction /100)));
 
             // if quest time is below 60, use minutes
             if (tfq < 60) {
@@ -956,9 +956,11 @@ function timeCounter() {
             var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
             var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
             var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
+            var hQuestReduction = $('.numQuestH').next().find('span').text();
             var tfqh;
 
             tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
+            tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
             // if quest timer is below 60, use minutes
             if (tfqh < 60) {
                 $('.minsToHarvestQuest').text("Around " + (tfqh).toString() + " minutes left.");
