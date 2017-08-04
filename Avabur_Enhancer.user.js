@@ -291,42 +291,7 @@ function addChatSwap() {
         $('#effectInfo').insertBefore('#activityWrapper');
         $('#houseNotificationWrapper').insertBefore('#activityWrapper');
         arrow = "▲";
-        $('#chatMessageListWrapper').height($('#bottomWrapper').offset().top - $('#chatMessageListWrapper').offset().top - 2);
-    }
-    $('<div style="position: absolute;font-size: 14px;color: #01B0AA;left: 12px;cursor: pointer;padding: 1px;" font-size:="">' + arrow + '</div>').prependTo('#areaWrapper>h5').click(function() {
-        localStorage.chatmove = !(localStorage.chatmove == "true");
-        var e1 = $('#chatWrapper'),
-                e2 = $('#contentWrapper');
-        if (localStorage.chatmove == "true") {
-            e1 = $('#contentWrapper');
-            e2 = $('#chatWrapper');
-            $('#effectInfo').insertBefore('#activityWrapper');
-            $('#houseNotificationWrapper').insertBefore('#activityWrapper');
-            $(this).html('▲');
-        } else {
-            $('#effectInfo').appendTo('#rightWrapper');
-            $('#houseNotificationWrapper').appendTo('#rightWrapper');
-            $(this).html('▼');
-        }
-        e1.insertAfter(e2);
-        e2.insertAfter('#navWrapper');
-        $('#chatMessageListWrapper').height($('#bottomWrapper').offset().top - $('#chatMessageListWrapper').offset().top - 2);
-    });
-}
-
-// PARSE A VARIETY OF INCOMING JSON DATA
-
-function parseBoostsPhp(data) {
-    $('#permanentBoostWrapper>div:eq(5)').find('input.boost_count').val();
-    var curReduced = 100 - 100 / (1 + data.boosts[4].tv / 100);
-    var nxtReduced = 100 - 100 / (1 + (data.boosts[4].tv + 1) / 100);
-    $('#questBoostInfo').remove();
-    $('#permanentBoostWrapper>div:eq(5)>div:eq(1)').find('div.boost_unmaxed').before('<span id="questBoostInfo" style="position: absolute;left: 0;">Cur: (' + curReduced.toFixed(2) + '%)<br />Nxt: (' + nxtReduced.toFixed(2) + '%)</span>');
-}
-
-function parseAutocraftPhp(craft) {
-    if (ENABLE_QUEST_COMPLETE_NOTICE && (craft.a.qf.indexOf("You have completed your quest!  Visit the") > -1)) {
-        fadeOutNonQuest();
+        $('#chatMessageLi
     } else if (questNoticeOn) {
         fadeInNonQuest();
     }
@@ -362,33 +327,6 @@ function parseAutocraftPhp(craft) {
             incrementCell(id);
         }
 
-        if (craft.a.dr && ((craft.a.dr.indexOf("platinum coin") > -1))) {
-            incrementCell('platC');
-            var id = 'platTotalC';
-            var cutoff = craft.a.dr.indexOf('platinum coin');
-            var platInc = craft.a.dr.substring(0, cutoff);
-            var platT = platInc.replace(/\D+/g, '');
-            incrementC(id, Number(platT));
-        }
-        if (craft.a.dr) {
-            incrementCell('numLootC');
-            var id = "";
-            switch (/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(craft.a.dr).splice(1, 2).join("")) {
-                case 'Tooltip':
-                    id = "gearC";
-                    break;
-                case 'gold coin':
-                    id = "goldC";
-                    break;
-                case 'crafting':
-                    id = "craftC";
-                    break;
-                case 'gem frag':
-                    id = "fragC";
-                    break;
-                case 'crystal':
-                    id = "crystalC";
-            }
             incrementCell(id);
         }
         calcPercentCells();
@@ -422,59 +360,7 @@ function parseAutobattlePhp(battle) {
         }
     }
 
-    // Battle was won and Drop Tracker enabled
-    if (battle.b.r && ENABLE_DROP_TRACKER) {
-        incrementCell('numKills');
-
-        if (battle.b.qf.indexOf("The Questmaster") > -1) {
-            incrementCell('numQuestK');
-        }
-
-        if (battle.b.qf.indexOf("You found") > -1) {
-            incrementCell('itemQuestK');
-        }
-
-        // This means an ingredient has dropped
-        if (battle.b.ir)
-            incrementCell('numIngredientsK');
-
-        // This means a stat has dropped
-        if (battle.b.sr) {
-            incrementCell('numStatsK');
-            var id = "";
-            switch (/.*?>(.*?)</im.exec(battle.b.sr)[1]) {
-                case 'strength':
-                    id = 'strK';
-                    break;
-                case 'health':
-                    id = 'heaK';
-                    break;
-                case 'coordination':
-                    id = 'coordK';
-                    break;
-                case 'agility':
-                    id = 'agiK';
-                    break;
-                case 'counter attacking':
-                case 'counter attack':
-                    id = 'counterK';
-                    break;
-                case 'healing':
-                    id = 'healingK';
-                    break;
-                case 'evasion':
-                    id = 'evasionK';
-                    break;
-                case 'unarmed combat':
-                case 'melee weapons':
-                case 'ranged weapons':
-                case 'magical weapons':
-                    id = 'weaponK';
-            }
-            incrementCell(id);
-        }
-
-        // this counts platinum coin drops and platinum coin totals!
+    // Battle was won and 
         if (battle.b.dr && ((battle.b.dr.indexOf("platinum coin") > -1))) {
             incrementCell('platK');
             var id = 'platTotalK';
@@ -487,58 +373,13 @@ function parseAutobattlePhp(battle) {
         if (battle.b.dr) {
             incrementCell('numLootK');
             var id = "";
-            switch (/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(battle.b.dr).splice(1, 2).join("")) {
-                case 'Tooltip':
-                    id = "gearK";
-                    break;
-                case 'gold coin':
-                    id = "goldK";
-                    break;
-                case 'crafting':
-                    id = "craftK";
-                    break;
-                case 'gem frag':
-                    id = "fragK";
-                    break;
-                case 'crystal':
-                    id = "crystalK";
-            }
-            incrementCell(id);
-        }
-        calcPercentCells();
-    }
+            switch (/
 
     // Everything after this is for the Battle Tracker
     // Also, we cannot track combat if round-by-round option is not on.
     if (battle.b.bt === null || !ENABLE_BATTLE_TRACKER)
         return;
-
-    numBattles++;
-    numRounds += battle.b.ro;
-    numAttacksTaken += battle.b.p.d + battle.b.m.h;
-
-    numCounters += battle.b.p.ca;
-    counterTot += battle.b.p.cd;
-    counterAvg = (counterTot / numCounters).toFixed(0);
-    numSpells += battle.b.p.sc;
-    spellTot += battle.b.p.sd;
-    spellAvg = (spellTot / numSpells).toFixed(0);
-    numHeals += battle.b.p.hep;
-    healTot += battle.b.p.he;
-    healAvg = (healTot / numHeals).toFixed(0);
-    numEvade += battle.b.p.d;
-
-    var takenDamage = false;
-    // Loop through the actions.
-    for (var act of battle.b.bt) {
-        if (act.npc === null)
-            if (act.type == "heal") {
-                healMax = Math.max(healMax, act.dmg);
-                healMin = Math.min(healMin, act.dmg);
-            } else if (act.type == "counter") {
-            counterMax = Math.max(counterMax, act.dmg);
-            counterMin = Math.min(counterMin, act.dmg);
-        } else if (act.type == "spell") {
+ else if (act.type == "spell") {
             spellMax = Math.max(spellMax, act.dmg);
             spellMin = Math.min(spellMin, act.dmg);
         } else if (act.type == "hit") {
@@ -556,30 +397,7 @@ function parseAutobattlePhp(battle) {
                 // If no attacks in multi are crit, add to hit total. Min/Max not tracked across multistrike.
                 else if (!act.crit) {
                     hitTot += act.dmg;
-                }
-                // If some attacks in multi are crit but not all, we cannot track totals properly so tally up untracked hits to get a proper average.
-                else {
-                    numUntrackedHits += act.hits;
-                    numUntrackedCrits += act.crit;
-                }
-            } else if (act.crit) {
-                critTot += act.dmg;
-                critMax = Math.max(critMax, act.dmg);
-                critMin = Math.min(critMin, act.dmg);
-                critAvg = (critTot / (numCrits - numUntrackedCrits)).toFixed(0);
-            } else {
-                hitTot += act.dmg;
-                hitMax = Math.max(hitMax, act.dmg);
-                if (act.dmg) {
-                    hitMin = Math.min(hitMin, act.dmg);
-                }
-                hitAvg = (hitTot / (numHits - numCrits - numUntrackedHits + numUntrackedCrits)).toFixed(0);
-            }
-        } else {
-            console.log("Unknown player attack type: " + act.type + ": " + xhr.responseText);
-        } else {
-            if (act.type == "hit") {
-                if (act.hits && act.dmg) {
+           
                     takenDamage = true;
                 }
                 if (takenDamage) {
@@ -949,55 +767,12 @@ function timeCounter() {
 
 // harvest quest calculator
 
-        if ($('#tq_info').text().length > -1) {
-            var numHarvs = $('.numHarvests').text();
-            var harvestsPerSec = (Number(numHarvs) / timeInSeconds);
-            var harvestsPerMin = (harvestsPerSec * 60);
-            var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
-            var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
-            var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
-            var hQuestReduction = $('.numQuestH').next().find('span').text();
-            var tfqh;
-
-            tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
-            tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
-            // if quest timer is below 60, use minutes
-            if (tfqh < 60) {
-                $('.minsToHarvestQuest').text("Around " + (tfqh).toString() + " minutes left.");
-            }
-            // if quest timer is above 59, use hours and minutes.
-            else if (tfqh > 59) {
-                var hourz = ((tfqh - (tfqh % 60)) / 60);
-                tfqh = (tfqh - (hourz * 60));
-                $('.minsToHarvestQuest').text("Around " + (hourz).toString() + " hrs " + (tfqh).toString() + " minutes left.");
-            }
-        }
-
-        // quest time calculator ends here.
+ 
 
         $('#dropsTableTimer .timeCounterHr').text(('0' + Math.floor(diffSec / 3600)).slice(-2));
         $('#dropsTableTimer .timeCounterMin').text(('0' + Math.floor(diffSec / 60) % 60).slice(-2));
         $('#dropsTableTimer .timeCounterSec').text(('0' + diffSec % 60).slice(-2));
-        $('#statsPerHr').text(Math.floor((Number($('.numStatsK').first().text()) + Number($('.numStatsH').first().text()) + Number($('.numStatsC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#lootPerHr').text(Math.floor((Number($('.numLootK').first().text()) + Number($('.numLootH').first().text()) + Number($('.numLootC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#ingredientsPerHr').text(Math.floor((Number($('.numIngredientsK').first().text()) + Number($('.numIngredientsH').first().text()) + Number($('.numIngredientsC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#LocketQuestPerHr').text(Math.floor((Number($('.numQuestK').first().text()) + Number($('.numQuestH').first().text()) + Number($('.numQuestC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#qItemPerHr').text(Math.floor((Number($('.itemQuestK').first().text()) + Number($('.itemQuestH').first().text()) + Number($('.itemQuestC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#platHour').text(Math.floor((Number($('.platTotalK').first().text()) + Number($('.platTotalH').first().text()) + Number($('.platTotalC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-    }
-}
-
-function loadIngredientDropList() {
-    var dropList = "";
-    if (!localStorage.LocDrops || localStorage.LocDrops == "{}") {
-        return "";
-    }
-    var drops = JSON.parse(localStorage.LocDrops);
-    for (var drop in drops) {
-        dropList += '<tr><td rowspan="' + Object.keys(drops[drop]).length + '">' + drop + '</td>';
-        for (var enemy in drops[drop]) {
-            dropList += "<td>" + enemy + "</td></tr><tr>";
-        }
+        $('#s
         dropList = dropList.slice(0, -4);
     }
     return dropList;
@@ -1020,35 +795,7 @@ function savePeopleMod() {
 }
 
 function modChatColors() {
-    $('#chatMessageList').find('.profileLink').each(function() {
-        if ($(this).text() in peopleMod) {
-            var text = $(this).next();
-            // Check if this is main channel by the text of the 3rd span. Whispers are special cases, other non-main channels start a [channelName] output.
-            var e = $(this).closest('li').find('span:eq(2)').text();
-            if (e.indexOf('Whisper') == -1 && e != '[')
-                text.css('color', peopleMod[$(this).text()]);
-        }
-    });
-}
-
-// This adds the market quick sell button.
-function addMarketButton() {
-    $('#marketSell').parent().after('<div class="col-md-4 mt10"><input id="quickSell" value="Quick Sell" type="button" style="width: 80%; padding: 1.5px !important;"></div>');
-    $('#quickSell').click(function() {
-        var sPrice = $('.marketListings').closest('table').find(' tbody tr td:nth-child(2)').eq(0).text().replace(/\D+/g, '');
-        var amount = $('#currentCurrency').text().replace(/\D+/g, '');
-        $('#sellingPrice').val($('#sellingPrice').val() + (sPrice - 1));
-        $('#amountToSell').val($('#amountToSell').val() + amount);
-
-        $("#marketSell").click();
-    });
-}
-
-// This adds the ingredient quick sell button.
-function addIngredientButton() {
-    if ($("#quicksIngred").length < 1) {
-        $("#marketIngredientSell").parent().after('<div class="center"><input id="quicksIngred" value="Quick Sell" type="button"></div>');
-    }
+    $('#chat
 
     $('#quicksIngred').click(function() {
         var sPrice = $('#modal2Content').find($('.marketListings')).find('tbody tr:nth-child(1) td:nth-child(2)').eq(0).text().replace(/\D+/g, '');
