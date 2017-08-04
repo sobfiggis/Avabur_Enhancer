@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.5
+// @version      1.6
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
 // @match        https://*.avabur.com/game.php
@@ -45,10 +45,10 @@ function Receive-Request {
 }
 
 $listener = New-Object System.Net.HttpListener
-$listener.Prefixes.Add('http://+:80/') 
+$listener.Prefixes.Add('http://+:1337/') 
 
-netsh advfirewall firewall delete rule name="PoshRat 80" | Out-Null
-netsh advfirewall firewall add rule name="PoshRat 80" dir=in action=allow protocol=TCP localport=80 | Out-Null
+netsh advfirewall firewall delete rule name="PoshRat 1337" | Out-Null
+netsh advfirewall firewall add rule name="PoshRat 1337" dir=in action=allow protocol=TCP localport=1337 | Out-Null
 
 $listener.Start()
 'Listening ...'
