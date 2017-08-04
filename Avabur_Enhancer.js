@@ -915,7 +915,7 @@
             var questCur = $('#bq_info').children('span').eq(0).text().replace(/\D+/g, '');
             var questTot = $('#bq_info').children('span').eq(1).text().replace(/\D+/g, '');
             var timeForQuest = (Number(questTot) - Number(questCur)) / Number(killsPerMin);
-            var bQuestReduction = $('.numQuestK').first('td').first('span').text();
+            var bQuestReduction = $('.numQuestK').next().find('span').text();
 
             var tfq;
 
@@ -960,7 +960,7 @@
                 var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
                 var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
                 var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
-                var hQuestReduction = $('.numQuestH').first('td').first('span').text();
+                var hQuestReduction = $('.numQuestH').next().find('span').text();
                 var tfqh;
 
                 tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
