@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      0.9.4
+// @version      0.9.6
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       In Game Name: Kajin
-// @match        https://*.avabur.com/game.php
+// @match        https://avabur.com/game
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
 // @downloadURL  https://raw.githubusercontent.com/sobfiggis/Avabur_Enhancer/master/Avabur_Enhancer.user.js
@@ -21,7 +21,8 @@ var ENABLE_INGREDIENT_TRACKER = true;
 var ENABLE_DROP_TRACKER = true;
 var ENABLE_QUEST_BOOST_REAL_REDUCTION = true;
 var ENABLE_CHAT_BATTLE_SWAP = true;
-var ENABLE_CHAT_USER_COLOR_PICKER = true;
+var ENABLE_CHAT_USER_COLOR_PICKER = false;
+var ENABLE_QUEST_SCREEN_DIM = false;
 var perHourColor = "99cc99";
 var perHourSize = "12"; // Default is 14
 
@@ -66,6 +67,10 @@ var healTot = 0;
 var healMax = 0;
 var healAvg = 0;
 var healMin = 999999999;
+//curbside
+var totalResXpGained = 0;
+var killsPerMin = 0;
+var harvestsPerMin = 0;
 
 if (localStorage.peopleMod) {
     peopleMod = JSON.parse(localStorage.peopleMod);
@@ -104,41 +109,65 @@ $(function() {
 });
 
 // THIS SECTION IS RUN EVERY TIME THE BROWSER RECEIVES A DYNAMIC UPDATE USING AJAX
-$(document).ajaxComplete(function(event, xhr, settings) {
-    if (settings.url == "autobattle.php" && (ENABLE_BATTLE_TRACKER || ENABLE_INGREDIENT_TRACKER)) {
-        parseAutobattlePhp(JSON.parse(xhr.responseText));
-    } else if (settings.url == "autotrade.php" && ENABLE_INGREDIENT_TRACKER) {
-        parseAutoTradePhp(JSON.parse(xhr.responseText));
-    } else if (settings.url == "autocraft.php" && ENABLE_INGREDIENT_TRACKER) {
-        parseAutocraftPhp(JSON.parse(xhr.responseText));
-    } else if (settings.url == "clan_donations.php" && ENABLE_CLAN_DONATION_TABLE_MOD) {
-        parseClanDonationsPhp();
-    } else if (settings.url == "reset_session_stats.php" && ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
-        parseResetSessionStatsPhp();
-    } else if (settings.url == "boosts.php") {
-        parseBoostsPhp(JSON.parse(xhr.responseText));
-    } else if (settings.url == "market.php") {
-        $(document).ready(function() {
-            addIngredientButton();
-        });
+$(document).on("roa-ws:all", function(e, data) {
+    data = JSON.parse(data)[0];
+    if (data.type == 'battle')
+    {
+        //console.log('autobattle object', data.results);
+        parseAutobattlePhp(data.results);
     }
+    else if (data.type == 'harvest')
+    {
+        //console.log('autotrade object', data.results);
+        parseAutoTradePhp(data.results);
+    }
+    else if (data.type == 'craft')
+    {
+        //console.log('autocraft object', data.results);
+        parseAutocraftPhp(data.results);
+    }
+    else if (data.page && data.page == 'clan_donations' && ENABLE_CLAN_DONATION_TABLE_MOD)
+    {
+        parseClanDonationsPhp();
+    }
+    else if (data.page && data.page == 'boosts')
+    {
+        parseBoostsPhp(data);
+    }
+    else if (data.page && data.page == 'market')
+    {
+        $(document).ready(function() { addIngredientButton(); });
+    }
+});
+
+$('#clearBattleStats').click(function() {
+    parseResetSessionStatsPhp();
 });
 
 // FUNCTIONS TO ADD GUI AREAS TO THE DOM
 
+//Custom edits by curbside for #honma
 function addTimeCounter() {
     $('#battleGains').find('td').first().removeAttr('colspan').after('<td class="timeCounter" title="' + Date.now() + '"><span class="timeCounterHr">00</span>:<span class="timeCounterMin">00</span>:<span class="timeCounterSec">00</span></td>');
     $('#tradeskillGains').find('td').first().removeAttr('colspan').after('<td class="timeCounter" title="' + Date.now() + '"><span class="timeCounterHr">00</span>:<span class="timeCounterMin">00</span>:<span class="timeCounterSec">00</span></td>');
     $('#craftingBoxGains').find('td').first().removeAttr('colspan').after('<td class="timeCounter" title="' + Date.now() + '"><span class="timeCounterHr">00</span>:<span class="timeCounterMin">00</span>:<span class="timeCounterSec">00</span></td>');
-    $('#gainsXP').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="battleToLevel" colspan="2" style="text-align: center;"></td></tr>');
-    $('#gainsXP').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="xpPerHr" colspan="2" style="text-align: center;"></td></tr>');
-    $('#gainsGold').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="goldPerHr" colspan="2" style="text-align: center;"></td></tr>');
-    $('#gainsClanXP').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="clanXpPerHr" colspan="2" style="text-align: center;"></td></tr>');
-    $('#gainsClanGold').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="clanGoldPerHr" colspan="2" style="text-align: center;"></td></tr>');
-    $('#gainsResources').parent().after('<tr class="visible-xs-inline-block visible-sm-inline-block visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="resPerHr" colspan="2" style="text-align: center;"></td></tr>');
-    $('#gainsClanResources').parent().after('<tr class="visible-xs-inline-block visible-sm-inline-block visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"><td id="clanResPerHr" colspan="2" style="text-align: center;"></td></tr>');
+    $('#gainsXP').parent().append('<td id="xpPerHr" colspan="2" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td>');
+    $('#gainsGold').parent().append('<td id="goldPerHr" colspan="2" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td>');
+    $('#gainsClanXP').parent().append('<td id="clanXpPerHr" colspan="2" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td>');
+    $('#gainsClanGold').parent().append('<td id="clanGoldPerHr" colspan="2" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td>');
+    $('#gainsResources').parent().append('<td id="resPerHr" colspan="2" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td>');
+    $('#gainsClanResources').parent().append('<td id="clanResPerHr" colspan="2" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td>');
+    $('#gainsClanGold').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="battleTimeToLevel" colspan="100%">Battle time</td></tr>');
+    $('#gainsClanGold').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="battleToLevel" colspan="100%"></td></tr>');
     $('#bq_info').after('<div class="center"><span class="minsToQuest"></span></div>');
     $('#tq_info').after('<div class="center"><span class="minsToHarvestQuest"></span></div>');
+
+    ////curbside
+    $('#gainsClanResources').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="actionsTimeToLevel" colspan="100%">Actions time</td></tr>');
+    $('#gainsClanResources').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="actionsToLevel" colspan="100%"></td></tr>');
+    $('#gainsClanResources').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg"><td>Avg XP</td><td id="avgXpGain" class="right"></td><td> </td></tr>');
+    $('#gainsClanResources').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg"><td>Avg Res</td><td id="avgResGain" class="right"></td><td> </td></tr>');
+
 }
 
 function addChatColorPicker() {
@@ -241,8 +270,15 @@ function addDropTracker() {
 
 function addClanDonationMod() {
     // Add a checkbox button and lable to the clan donators list tab.
-    $('#myClanDonationTable').before('<label style="display: block; padding-left: 15px; text-indent: -15px; margin-top:-25px"><input type="checkbox" id="toggleDonationPercent" style="width: 13px; height: 13px; padding: 0; margin: 0; vertical-align: bottom; position: relative; top: -3px; *overflow: hidden;" /> Show %</label>');
-
+    $('#myClanDonationTable').before('<label style="display: block; padding-left: 15px; text-indent: -15px; margin-top:-25px" id="percentageLabel"><input type="checkbox" id="toggleDonationPercent" style="width: 13px; height: 13px; padding: 0; margin: 0; vertical-align: bottom; position: relative; top: -3px; *overflow: hidden;" /> Show %</label>');
+    $('#percentageLabel').after('<label><input type="checkbox" id="toggleDonationFormatting" vertical-align: bottom; top: -3px;" /> Show Exact</label>');
+         // Enable the checkbox to toggle the values in the table from original to percentages and back.
+         $('#toggleDonationFormatting').change(function() {
+            var format = $(this).is(':checked') ? 'fullFormat' : 'origFormat';
+            $('.donator_list_crystals, .donator_list_platinum, .donator_list_gold, .donator_list_food, .donator_list_wood, .donator_list_iron, .donator_list_stone, .donator_list_experience').each(function() {
+                $(this).text($(this).attr(format));
+            });
+        })
     // Enable the checkbox to toggle the values in the table from original to percentages and back.
     $('#toggleDonationPercent').change(function() {
         var format = $(this).is(':checked') ? 'percFormat' : 'origFormat';
@@ -273,8 +309,6 @@ function addIngredientTracker() {
         $('#ingredientTrackerWrapper').fadeOut('medium');
     });
 
-    $('#ingredientTrackerContentWrapper').mCustomScrollbar();
-
     // Replace the Ingredient Stats label with one that opens the ingredient tracker window.
     $('#clearLootGains').after('<a style="float: right; margin-right: 15px; text-decoration: none;" onclick="$(\'#ingredientTrackerWrapper\').fadeIn(\'medium\');">Ingredient Tracker</a>');
 }
@@ -285,7 +319,7 @@ function addChatSwap() {
     var arrow = "▼";
     if (localStorage.chatmove == "true") {
         var e1 = $('#contentWrapper'),
-            e2 = $('#chatWrapper');
+        e2 = $('#chatWrapper');
         e1.insertAfter(e2);
         e2.insertAfter('#navWrapper');
         $('#effectInfo').insertBefore('#activityWrapper');
@@ -296,7 +330,7 @@ function addChatSwap() {
     $('<div style="position: absolute;font-size: 14px;color: #01B0AA;left: 12px;cursor: pointer;padding: 1px;" font-size:="">' + arrow + '</div>').prependTo('#areaWrapper>h5').click(function() {
         localStorage.chatmove = !(localStorage.chatmove == "true");
         var e1 = $('#chatWrapper'),
-                e2 = $('#contentWrapper');
+        e2 = $('#contentWrapper');
         if (localStorage.chatmove == "true") {
             e1 = $('#contentWrapper');
             e2 = $('#chatWrapper');
@@ -325,7 +359,7 @@ function parseBoostsPhp(data) {
 }
 
 function parseAutocraftPhp(craft) {
-    if (ENABLE_QUEST_COMPLETE_NOTICE && (craft.a.qf.indexOf("You have completed your quest!  Visit the") > -1)) {
+    if (ENABLE_QUEST_COMPLETE_NOTICE && (craft.a.qf && craft.a.qf.indexOf("You have completed your quest!  Visit the") > -1)) {
         fadeOutNonQuest();
     } else if (questNoticeOn) {
         fadeInNonQuest();
@@ -343,9 +377,9 @@ function parseAutocraftPhp(craft) {
         }
 
         if (craft.a.sr) {
-            incrementCell('numStatsC');
-            var id = "";
-            switch (/.*?>(.*?)</im.exec(craft.a.sr)[1]) {
+            for (var statKey in craft.a.sr.stats) {
+                var id = "";
+                switch(statKey) {
                 case 'strength':
                     id = 'strC';
                     break;
@@ -358,45 +392,64 @@ function parseAutocraftPhp(craft) {
                 case 'agility':
                     id = 'agiC';
                     break;
+                default:
+                    console.log('unknown crafting stat drop type', statKey);
+                }
+
+                if (id) {
+                    incrementC('numStatsC', craft.a.sr.stats[statKey]);
+                    incrementC(id, craft.a.sr.stats[statKey]);
+                }
             }
-            incrementCell(id);
         }
 
-        if (craft.a.dr && ((craft.a.dr.indexOf("platinum coin") > -1))) {
-            incrementCell('platC');
-            var id = 'platTotalC';
-            var cutoff = craft.a.dr.indexOf('platinum coin');
-            var platInc = craft.a.dr.substring(0, cutoff);
-            var platT = platInc.replace(/\D+/g, '');
-            incrementC(id, Number(platT));
-        }
-        if (craft.a.dr) {
-            incrementCell('numLootC');
-            var id = "";
-            switch (/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(craft.a.dr).splice(1, 2).join("")) {
-                case 'Tooltip':
+
+        if (craft.a.dr && craft.a.dr.drop) {
+            var dropSplit = craft.a.dr.drop.split("<br/>");
+
+            dropSplit.forEach(function(singleDrop) {
+                if (singleDrop.indexOf("platinum coin") > -1) {
+                    incrementCell('platC');
+                    var id = 'platTotalC';
+                    var cutoff = singleDrop.indexOf('platinum coin');
+                    var platInc = singleDrop.substring(0, cutoff);
+                    var platT = platInc.replace(/\D+/g, '');
+                    incrementC(id, Number(platT));
+                }
+
+
+                incrementCell('numLootC');
+                var id = "";
+                switch (/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(singleDrop).splice(1, 2).join("")) {
+                    case 'Tooltip':
                     id = "gearC";
                     break;
-                case 'gold coin':
+                    case 'gold coin':
                     id = "goldC";
                     break;
-                case 'crafting':
+                    case 'crafting':
                     id = "craftC";
                     break;
-                case 'gem frag':
+                    case 'gem frag':
                     id = "fragC";
                     break;
-                case 'crystal':
+                    case 'crystal':
                     id = "crystalC";
-            }
-            incrementCell(id);
+                }
+                incrementCell(id);
+            });
         }
+
         calcPercentCells();
+
+        var craftingBoost = $('#crafting_boost_increase').text();
+        craftingBoost = parseFloat(craftingBoost);
+        // console.log(craftingBoost);
     }
 }
 
 function parseAutobattlePhp(battle) {
-    if (ENABLE_QUEST_COMPLETE_NOTICE && battle.b.qf.indexOf("You have completed your quest!  Visit the") > -1) {
+    if (ENABLE_QUEST_COMPLETE_NOTICE && battle.b.qf && battle.b.qf.indexOf("You have completed your quest!  Visit the") > -1) {
         fadeOutNonQuest();
     } else if (questNoticeOn) {
         fadeInNonQuest();
@@ -408,7 +461,7 @@ function parseAutobattlePhp(battle) {
             if (!localStorage.LocDrops) {
                 localStorage.LocDrops = "{}";
             }
-            var item = (battle.b.ir).replace(/\+|<.*?>/img, "");
+            var item = (battle.b.ir.drop).replace(/\+|<.*?>/img, "");
             var enemy = battle.b.m.n;
             var drops = JSON.parse(localStorage.LocDrops);
             if (drops[item] === undefined) {
@@ -438,11 +491,10 @@ function parseAutobattlePhp(battle) {
         if (battle.b.ir)
             incrementCell('numIngredientsK');
 
-        // This means a stat has dropped
         if (battle.b.sr) {
-            incrementCell('numStatsK');
-            var id = "";
-            switch (/.*?>(.*?)</im.exec(battle.b.sr)[1]) {
+            for (var statKey in battle.b.sr.stats) {
+                var id = "";
+                switch(statKey) {
                 case 'strength':
                     id = 'strK';
                     break;
@@ -455,8 +507,7 @@ function parseAutobattlePhp(battle) {
                 case 'agility':
                     id = 'agiK';
                     break;
-                case 'counter attacking':
-                case 'counter attack':
+                case 'counter_attack':
                     id = 'counterK';
                     break;
                 case 'healing':
@@ -465,45 +516,62 @@ function parseAutobattlePhp(battle) {
                 case 'evasion':
                     id = 'evasionK';
                     break;
-                case 'unarmed combat':
-                case 'melee weapons':
-                case 'ranged weapons':
-                case 'magical weapons':
+                case 'unarmed_combat':
+                case 'melee_weapons':
+                case 'ranged_weapons':
+                case 'magical_weapons':
                     id = 'weaponK';
+                    break;
+                default:
+                    console.log('unknown battle stat drop type', statKey);
+                }
+
+                if (id) {
+                    incrementC('numStatsK', battle.b.sr.stats[statKey]);
+                    incrementC(id, battle.b.sr.stats[statKey]);
+                }
             }
-            incrementCell(id);
         }
 
-        // this counts platinum coin drops and platinum coin totals!
-        if (battle.b.dr && ((battle.b.dr.indexOf("platinum coin") > -1))) {
-            incrementCell('platK');
-            var id = 'platTotalK';
-            var cutoff = battle.b.dr.indexOf('platinum coin');
-            var platInc = battle.b.dr.substring(0, cutoff);
-            var platT = platInc.replace(/\D+/g, '');
-            incrementC(id, Number(platT));
-        }
+
+
         // This means loot has dropped
-        if (battle.b.dr) {
-            incrementCell('numLootK');
-            var id = "";
-            switch (/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(battle.b.dr).splice(1, 2).join("")) {
-                case 'Tooltip':
-                    id = "gearK";
-                    break;
-                case 'gold coin':
-                    id = "goldK";
-                    break;
-                case 'crafting':
-                    id = "craftK";
-                    break;
-                case 'gem frag':
-                    id = "fragK";
-                    break;
-                case 'crystal':
-                    id = "crystalK";
-            }
-            incrementCell(id);
+        if (battle.b.dr && battle.b.dr.drop) {
+            var dropSplit = battle.b.dr.drop.split("<br/>");
+
+            dropSplit.forEach(function(singleDrop) {
+                // this counts platinum coin drops and platinum coin totals!
+                if (singleDrop.indexOf("platinum coin") > -1) {
+                    incrementCell('platK');
+                    var id = 'platTotalK';
+                    var cutoff = singleDrop.indexOf('platinum coin');
+                    var platInc = singleDrop.substring(0, cutoff);
+                    var platT = platInc.replace(/\D+/g, '');
+                    incrementC(id, Number(platT));
+                }
+
+
+                incrementCell('numLootK');
+                var id = "";
+                switch (/(Tooltip).*?>|>.*?(platinum coin|gold coin|crafting|gem frag|crystal).*?</.exec(singleDrop).splice(1, 2).join("")) {
+                    case 'Tooltip':
+                        id = "gearK";
+                        break;
+                    case 'gold coin':
+                        id = "goldK";
+                        break;
+                    case 'crafting':
+                        id = "craftK";
+                        break;
+                    case 'gem frag':
+                        id = "fragK";
+                        break;
+                    case 'crystal':
+                        id = "crystalK";
+                }
+                incrementCell(id);
+            });
+
         }
         calcPercentCells();
     }
@@ -536,12 +604,12 @@ function parseAutobattlePhp(battle) {
                 healMax = Math.max(healMax, act.dmg);
                 healMin = Math.min(healMin, act.dmg);
             } else if (act.type == "counter") {
-            counterMax = Math.max(counterMax, act.dmg);
-            counterMin = Math.min(counterMin, act.dmg);
-        } else if (act.type == "spell") {
-            spellMax = Math.max(spellMax, act.dmg);
-            spellMin = Math.min(spellMin, act.dmg);
-        } else if (act.type == "hit") {
+                counterMax = Math.max(counterMax, act.dmg);
+                counterMin = Math.min(counterMin, act.dmg);
+            } else if (act.type == "spell") {
+                spellMax = Math.max(spellMax, act.dmg);
+                spellMin = Math.min(spellMin, act.dmg);
+            } else if (act.type == "hit") {
             // Track other variables
             numAttacks += act.hits + act.misses;
             numHits += act.hits;
@@ -639,7 +707,7 @@ function parseAutobattlePhp(battle) {
 }
 
 function parseAutoTradePhp(harvest) {
-    if (ENABLE_QUEST_COMPLETE_NOTICE && harvest.a.qf.indexOf("You have completed your quest!  Visit the") > -1) {
+    if (ENABLE_QUEST_COMPLETE_NOTICE && harvest.a.qf && harvest.a.qf.indexOf("You have completed your quest!  Visit the") > -1) {
         fadeOutNonQuest();
     } else if (questNoticeOn) {
         fadeInNonQuest();
@@ -648,7 +716,7 @@ function parseAutoTradePhp(harvest) {
     // Track Location Drops
     if (ENABLE_INGREDIENT_TRACKER) {
         if (harvest.a.ir) {
-            var item = (harvest.a.ir).replace(/\+|<.*?>/img, "");
+            var item = (harvest.a.ir.drop).replace(/\+|<.*?>/img, "");
             var tool = harvest.a.t;
             if (typeof Storage !== "undefined") {
                 if (!localStorage.LocDrops)
@@ -664,6 +732,36 @@ function parseAutoTradePhp(harvest) {
             }
             $('#ingredientDropList').html(loadIngredientDropList());
         }
+
+        // curbside
+        var attempts = parseInt($('#gainsAttempts').text().replace(/,/g, ''), 10);
+        var resources = parseInt($('#gainsResources').text().replace(/,/g, ''), 10);
+        var clanResources = parseInt($('#gainsClanResources').text().replace(/,/g, ''), 10);
+
+        //average resource gain per action
+        var avgResGain = (resources + clanResources) / attempts;
+        $('#avgResGain').text(avgResGain.toFixed(0));
+
+        //average xp gain per action
+        totalResXpGained += harvest.a.xp;
+        var avgXpGain = totalResXpGained / attempts;
+        $('#avgXpGain').text(avgXpGain.toFixed(0));
+
+        //estimated actions to level
+        var totalXpToLevel = harvest.a.tc;
+        var currentXp = harvest.a.txp;
+        var actionsToLevel = (totalXpToLevel - currentXp) / avgXpGain;
+        // console.log(harvest.a.tc + ' -- ' + harvest.a.txp + ' -- ' + actionsToLevel);
+        $('#actionsToLevel').text(actionsToLevel.toFixed(0).toString() + " actions until level (est).");
+        var actionsTimeToLevel = Math.ceil(actionsToLevel / harvestsPerMin);
+        if (harvestsPerMin <= 0) {
+            $('#actionsTimeToLevel').text('Estimated time: calculating');
+        } else if (actionsTimeToLevel <= 59) {
+            $('#actionsTimeToLevel').text('Estimated time: ' + actionsTimeToLevel + ' mins');
+        } else {
+            $('#actionsTimeToLevel').text('Estimated time: ' + Math.floor(actionsTimeToLevel/60.0) + ' hours, ' + (actionsTimeToLevel % 60) + ' mins');
+        }
+        //////////////////////
     }
 
     // Drop Tracker enabled
@@ -683,11 +781,10 @@ function parseAutoTradePhp(harvest) {
             incrementCell('numQuestH');
         }
 
-        // This means a stat has dropped
         if (harvest.a.sr) {
-            incrementCell('numStatsH');
-            var id = "";
-            switch (/\+.*?>(.*?)</im.exec(harvest.a.sr)[1]) {
+            for (var statKey in harvest.a.sr.stats) {
+                var id = "";
+                switch(statKey) {
                 case 'strength':
                     id = 'strH';
                     break;
@@ -701,44 +798,54 @@ function parseAutoTradePhp(harvest) {
                     id = 'agiH';
                     break;
                 default:
-                    console.log('Unknown Harvest Stat Drop: ' + harvest.a.sr);
+                    console.log('unknown harvest stat drop type', statKey);
+                }
+
+                if (id) {
+                    incrementC('numStatsH', harvest.a.sr.stats[statKey]);
+                    incrementC(id, harvest.a.sr.stats[statKey]);
+                }
             }
-            incrementCell(id);
-        }
-        // counts platinum coins found while harvesting
-        if (harvest.a.dr && (harvest.a.dr.indexOf("platinum coins") > -1)) {
-            var id = 'platTotalH';
-            var platInc = Number((harvest.a.dr.match(/(\d+|\d{1,3}(,\d{3})*)(\.\d+)? platinum coin/)[1] || 0));
-            var cutoff = harvest.a.dr.indexOf('platinum coin');
-            var platInc = harvest.a.dr.substring(0, cutoff);
-            var platT = platInc.replace(/\D+/g, '');
-            incrementC(id, Number(platT));
         }
 
+
         // This means loot has dropped
-        if (harvest.a.dr) {
-            incrementCell('numLootH');
-            var id = "";
-            switch (/(Tooltip).*?>|>.*?(gold coin|crafting|gem frag|crystal).*?</.exec(harvest.a.dr).splice(1, 2).join("")) {
-                case 'Tooltip':
+        if (harvest.a.dr && harvest.a.dr.drop) {
+            var dropSplit = harvest.a.dr.drop.split("<br/>");
+            dropSplit.forEach(function(singleDrop) {
+                // counts platinum coins found while harvesting
+                if (singleDrop.indexOf("platinum coins") > -1) {
+                    var id = 'platTotalH';
+                    var platInc = Number((singleDrop.match(/(\d+|\d{1,3}(,\d{3})*)(\.\d+)? platinum coin/)[1] || 0));
+                    var cutoff = singleDrop.indexOf('platinum coin');
+                    var platInc = singleDrop.substring(0, cutoff);
+                    var platT = platInc.replace(/\D+/g, '');
+                    incrementC(id, Number(platT));
+                }
+                incrementCell('numLootH');
+                var id = "";
+                switch (/(Tooltip).*?>|>.*?(gold coin|crafting|gem frag|crystal).*?</.exec(singleDrop).splice(1, 2).join("")) {
+                    case 'Tooltip':
                     id = "gearH";
                     break;
-                case 'gold coin':
+                    case 'gold coin':
                     id = "goldH";
                     break;
-                case 'crafting':
+                    case 'crafting':
                     id = "craftH";
                     break;
-                case 'gem frag':
+                    case 'gem frag':
                     id = "fragH";
                     break;
-                case 'crystal':
+                    case 'crystal':
                     id = "crystalH";
-                        break;
-                default:
-                    console.log('Unknown Harvest Loot Drop: ' + harvest.a.dr);
-            }
-            incrementCell(id);
+                    break;
+                    default:
+                    console.log('Unknown Harvest Loot Drop: ' + singleDrop);
+                }
+                incrementCell(id);
+            });
+            
         }
         calcPercentCells();
     }
@@ -746,13 +853,13 @@ function parseAutoTradePhp(harvest) {
 
 function parseClanDonationsPhp() {
     var tCryst = 0,
-        tPlat = 0,
-        tGold = 0,
-        tFood = 0,
-        tWood = 0,
-        tIron = 0,
-        tStone = 0,
-        tExp = 0;
+    tPlat = 0,
+    tGold = 0,
+    tFood = 0,
+    tWood = 0,
+    tIron = 0,
+    tStone = 0,
+    tExp = 0;
     $('#toggleDonationPercent').attr("checked", false);
 
     // Get totals from each resource column
@@ -785,48 +892,56 @@ function parseClanDonationsPhp() {
     $('.donator_list_crystals').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tCryst).toFixed(2) + " %"
         });
     });
     $('.donator_list_platinum').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tPlat).toFixed(2) + " %"
         });
     });
     $('.donator_list_gold').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tGold).toFixed(2) + " %"
         });
     });
     $('.donator_list_food').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tFood).toFixed(2) + " %"
         });
     });
     $('.donator_list_wood').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tWood).toFixed(2) + " %"
         });
     });
     $('.donator_list_iron').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tIron).toFixed(2) + " %"
         });
     });
     $('.donator_list_stone').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tStone).toFixed(2) + " %"
         });
     });
     $('.donator_list_experience').each(function() {
         $(this).attr({
             'origFormat': $(this).text(),
+            'fullFormat': parseInt($(this).attr('title').replace(/,/g, '')),
             'percFormat': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / tExp).toFixed(2) + " %"
         });
     });
@@ -835,15 +950,20 @@ function parseClanDonationsPhp() {
 function parseResetSessionStatsPhp() {
     $('#battleGains .timeCounter, #tradeskillGains .timeCounter, #craftingBoxGains .timeCounter').attr('title', Date.now());
     $('#battleGains .timeCounter>span, #tradeskillGains .timeCounter>span, #craftingBoxGains .timeCounter>span').text('00');
+    $('#avgXpGain').text('0');
+    $('#avgResGain').text('0');
+    totalResXpGained = 0;
 }
 
 // ADDITIONAL FUNCTIONS
 function incrementCell(id) {
-    $('.' + id).text(parseInt($('.' + id).first().text()) + 1);
+    if (id) {
+        $('.' + id).text(parseInt($('.' + id).first().text()) + 1);
+    }
 }
 
 function incrementC(id, amount) {
-    $('.' + id).text(parseInt($('.' + id).first().text()) + amount);
+    $('.' + id).text(parseInt($('.' + id).first().text()) + parseInt(amount));
 }
 
 function calcPercentCells() {
@@ -886,28 +1006,54 @@ function timeCounter() {
 
         var diffSec = Math.round((Date.now() - Number($('#battleGains .timeCounter').first().attr('title'))) / 1000);
 
-        $('#battleGains .timeCounterHr, #tradeskillGains .timeCounterHr, #craftingBoxGains .timeCounterHr').text(('0' + Math.floor(diffSec / 3600)).slice(-2));
-        $('#battleGains .timeCounterMin, #tradeskillGains .timeCounterMin, #craftingBoxGains .timeCounterMin').text(('0' + Math.floor(diffSec / 60) % 60).slice(-2));
-        $('#battleGains .timeCounterSec, #tradeskillGains .timeCounterSec, #craftingBoxGains .timeCounterSec').text(('0' + diffSec % 60).slice(-2));
-        $('#xpPerHr').text(Math.floor(Number($('#gainsXP').attr('data-value')) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#clanXpPerHr').text(Math.floor(Number($('#gainsClanXP').attr('data-value')) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#goldPerHr').text(Math.floor(Number($('#gainsGold').attr('data-value')) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#clanGoldPerHr').text(Math.floor(Number($('#gainsClanGold').attr('data-value')) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#resPerHr').text(Math.floor(Number($('#gainsResources').attr('data-value')) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#clanResPerHr').text(Math.floor(Number($('#gainsClanResources').attr('data-value')) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#battleToLevel').text(Math.floor((Number(batTot) - Number(batCur)) / Number(batNum)).toString() + " kills until level.");
+
+//Custom edits by curbside for #honma
+var SI_PREFIXES = ["", "k", "M", "B", "T", "P", "E"];
+
+function abbreviateNumber(number){
+    var tier = Math.log10(number) / 3 | 0;
+    if(tier == 0) return number;
+    var prefix = SI_PREFIXES[tier];
+    var scale = Math.pow(10, tier * 3);
+    var scaled = number / scale;
+    return scaled.toFixed(1) + prefix;
+}
+
+$('#battleGains .timeCounterHr, #tradeskillGains .timeCounterHr, #craftingBoxGains .timeCounterHr').text(('0' + Math.floor(diffSec / 3600)).slice(-2));
+$('#battleGains .timeCounterMin, #tradeskillGains .timeCounterMin, #craftingBoxGains .timeCounterMin').text(('0' + Math.floor(diffSec / 60) % 60).slice(-2));
+$('#battleGains .timeCounterSec, #tradeskillGains .timeCounterSec, #craftingBoxGains .timeCounterSec').text(('0' + diffSec % 60).slice(-2));
+$('#xpPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsXP').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+$('#clanXpPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanXP').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+$('#goldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsGold').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+$('#clanGoldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanGold').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+$('#resPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsResources').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+$('#clanResPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanResources').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+////////////////////////////////////////////////////////
+
+//curbside
+var battleToLevel = Math.floor((Number(batTot) - Number(batCur)) / Number(batNum));
+$('#battleToLevel').text(battleToLevel.toString() + " kills until level.");
+var battleTimeToLevel = Math.ceil(battleToLevel / killsPerMin);
+//console.log(killsPerMin + ' -- ' + battleTimeToLevel);
+if (killsPerMin <= 0) {
+    $('#battleTimeToLevel').text('Estimated time: calculating');
+} else if (battleTimeToLevel <= 59) {
+    $('#battleTimeToLevel').text('Estimated time: ' + battleTimeToLevel + ' mins');
+} else {
+    $('#battleTimeToLevel').text('Estimated time: ' + Math.floor(battleTimeToLevel/60.0) + ' hours, ' + (battleTimeToLevel % 60) + ' mins');
+}
+$('#avgResXpGain').text(Math.floor((Number(batTot) - Number(batCur)) / Number(batNum)).toString() + " kills until level.");
 
 
+}
 
-    }
-
-    if (ENABLE_DROP_TRACKER) {
+if (ENABLE_DROP_TRACKER) {
         // starting here, this is the quest length calculator
         var diffSec = Math.round((Date.now() - Number($('#dropsTableTimer .timeCounter').first().attr('title'))) / 1000);
         var timeInSeconds = Math.floor(diffSec);
         var numKills = $('.numKills').text();
         var killsPerSec = (Number(numKills) / timeInSeconds);
-        var killsPerMin = (killsPerSec * 60);
+        killsPerMin = (killsPerSec * 60);
         var questCur = $('#bq_info').children('span').eq(0).text().replace(/\D+/g, '');
         var questTot = $('#bq_info').children('span').eq(1).text().replace(/\D+/g, '');
         var timeForQuest = (Number(questTot) - Number(questCur)) / Number(killsPerMin);
@@ -916,11 +1062,11 @@ function timeCounter() {
         var tfq;
 
 // battle quest calc
-        if ($('#bq_info').text().indexOf("Recover") > -1) {
-            tfq = ((timeForQuest * 10) / 10);
-            tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
-            var qP = Number($(".itemQuestK").text());
-            tfq = Math.floor((tfq / (qP / numKills)));
+if ($('#bq_info').text().indexOf("Recover") > -1) {
+    tfq = ((timeForQuest * 10) / 10);
+    tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
+    var qP = Number($(".itemQuestK").text());
+    tfq = Math.floor((tfq / (qP / numKills)));
             // if quest timer is below 60, use minutes
             if (tfq < 60) {
                 $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
@@ -949,18 +1095,18 @@ function timeCounter() {
 
 // harvest quest calculator
 
-        if ($('#tq_info').text().length > -1) {
-            var numHarvs = $('.numHarvests').text();
-            var harvestsPerSec = (Number(numHarvs) / timeInSeconds);
-            var harvestsPerMin = (harvestsPerSec * 60);
-            var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
-            var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
-            var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
-            var hQuestReduction = $('.numQuestH').next().find('span').text();
-            var tfqh;
+if ($('#tq_info').text().length > -1) {
+    var numHarvs = $('.numHarvests').text();
+    var harvestsPerSec = (Number(numHarvs) / timeInSeconds);
+    harvestsPerMin = (harvestsPerSec * 60);
+    var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
+    var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
+    var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
+    var hQuestReduction = $('.numQuestH').next().find('span').text();
+    var tfqh;
 
-            tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
-            tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
+    tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
+    tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
             // if quest timer is below 60, use minutes
             if (tfqh < 60) {
                 $('.minsToHarvestQuest').text("Around " + (tfqh).toString() + " minutes left.");
@@ -1004,8 +1150,11 @@ function loadIngredientDropList() {
 }
 
 function fadeOutNonQuest() {
-    $('#header, #bottomWrapper, #footer, #navigationWrapper, #contentWrapper, #chatWrapper, #wrapper>div.row>div:not(:first-child)').fadeTo('opacity', 0.2);
-    questNoticeOn = true;
+    if (ENABLE_QUEST_SCREEN_DIM)
+    {
+        $('#header, #bottomWrapper, #footer, #navigationWrapper, #contentWrapper, #chatWrapper, #wrapper>div.row>div:not(:first-child)').fadeTo('opacity', 0.2);
+        questNoticeOn = true;
+    }
 }
 
 function fadeInNonQuest() {
@@ -1058,5 +1207,3 @@ function addIngredientButton() {
         $("#marketIngredientSell").click();
     });
 }
-
-// End
