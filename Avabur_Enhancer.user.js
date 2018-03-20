@@ -8,6 +8,7 @@
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
 // @downloadURL  https://raw.githubusercontent.com/sobfiggis/Avabur_Enhancer/master/Avabur_Enhancer.user.js
+// @run-at       document-start
 // ==/UserScript==
 
 
