@@ -3,7 +3,7 @@
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
 // @version      0.9.6
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
-// @author       Original Creator: Kajin. Contributors: WinterPheonix
+// @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix
 // @match        https://avabur.com/game
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
