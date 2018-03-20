@@ -7,6 +7,7 @@
 // @match        https://avabur.com/game
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
+// @require      https://github.com/edvordo/RoA-WSHookUp/raw/master/RoA-WSHookUp.user.js
 // @downloadURL  https://raw.githubusercontent.com/sobfiggis/Avabur_Enhancer/master/Avabur_Enhancer.user.js
 // ==/UserScript==
 
