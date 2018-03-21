@@ -1,101 +1,15 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0
+// @version      1.0.1
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix
 // @match        https://avabur.com/game
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
 // @downloadURL  https://raw.githubusercontent.com/sobfiggis/Avabur_Enhancer/master/Avabur_Enhancer.user.js
-// @run-at       document-start
+// @run-at       document-idle
 // ==/UserScript==
-
-
-/*
- * ROA WebSocket Hook Kindly provided by edvordo see:
- * https://github.com/edvordo/RoA-WSHookUp/ 
- * this can also be used to clean up a lot of this code..
-*/
-(function(window) {
-    'use strict';
-
-    var OriginalWS = window.WebSocket;
-    var initOWS    = OriginalWS.apply.bind(OriginalWS);
-    var wsListener = OriginalWS.prototype.addEventListener;
-        wsListener = wsListener.call.bind(wsListener);
-    var hooked = false;
-    function MyWS(url, opts) {
-        var ws;
-        if (this instanceof WebSocket) {
-            if (arguments.length === 1) {
-                ws = new OriginalWS(url);
-            } else if (arguments.length >= 2) {
-                ws = new OriginalWS();
-            } else {
-                ws = new OriginalWS();
-            }
-        } else {
-            ws = initOWS(this, arguments);
-        }
-        wsListener(ws, "message", function(event){
-            hooked = true;
-            var etype = "roa-ws:";
-            var data;
-            try {
-                data = JSON.parse(event.data);
-                for (var i = 0; i < data.length; i++) {
-                    etype = "roa-ws:";
-                    var etypepage = "";
-                    var item = data[i];
-                    if (item.hasOwnProperty("type")) {
-                        etype = etype + item.type;
-                        // in case its a "page" type message create additional event
-                        // e.g.: "roa-ws:page:boosts", "roa-ws:page:clans" or "roa-ws:page:settings_milestones" etc.
-                        if (item.type === "page" && item.hasOwnProperty("page") && "string" === typeof item.page) {
-                            etypepage = etype + ":" + item.page;
-                        }
-                    } else {
-                        etype = etype + "general";
-                    }
-
-                    // This is a special kind of message containing info about the user
-                    // I'm resending it in 5 second because this script is supposed to
-                    // run at "document start" and potential userscripts that are
-                    // listening to the even "roa:login_info" may not catch this message.
-                    // They should, I got the message 99 times out of 100, which shows
-                    // that userscripts are not 100% reliable with their running queue.
-                    if (etype === "roa-ws:login_info") {
-                        setTimeout(function(_etype, _item){
-                            $(document).trigger(_etype, _item);
-                        }, 5000, etype, item);
-                    }
-
-                    $(document).trigger(etype, item);
-                    if (etypepage.length > 0) {
-                        $(document).trigger(etypepage, item);
-                    }
-                }
-            } catch (ex) {
-                data = event.data;
-                etype = etype + "general";
-                $(document).trigger(etype, data);
-            }
-
-            $(document).trigger("roa-ws:all", event.data);
-        });
-        return ws;
-    }
-    window.WebSocket = MyWS.bind();
-    window.WebSocket.prototype = OriginalWS.prototype;
-    window.WebSocket.prototype.constructor = window.WebSocket;
-
-    setTimeout(function(){
-        if (hooked === false) {
-            $.alert("The script 'WSHookUp' failed to hook to the WebSocket connection Avabur uses. In case you are using another userscript that depends on this, you may want to refresh the page to try again.", "WSHookUp Failed");
-        }
-    }, 30000);
-})(window);
 
 
 /**************************************************/
@@ -164,36 +78,50 @@ if (localStorage.peopleMod) {
     peopleMod = JSON.parse(localStorage.peopleMod);
 }
 
+window.addEventListener('load', function() {
+    // your code here
+    if (window.WebSocket.name == 'WebSocket') {
+        if (confirm('RoA Websocket script is required to run Avabur Enhancer. Would you like to install it now?')) {
+            window.open("https://github.com/edvordo/RoA-WSHookUp/raw/master/RoA-WSHookUp.user.js");
+        };
+    }
+}, false);
+
 // THIS SECTION RUNS ONCE WHEN THE PAGE LOADS
 $(function() {
-    $('head').append('<style>.ui-icon, .ui-widget-content .ui-icon {background-image: none;}.closeCustomWindow {position: absolute;right: -12px;top: -12px;font-size: 20px;text-align: center;border-radius: 40px;border: 1px solid black;background: transparent linear-gradient(to bottom, #008681 0%, #003533 100%) repeat scroll 0% 0%;width: 30px;}.closeCustomWindow a {text-decoration: none;}.customWindowWrapper {display: none;z-index: 99;position: absolute !important;top: 120px;left: 15%;}.customWindowContent {padding: 5px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px}.customWindowContent table {width: 100%;font-size: 12px;}.customWindowContent tbody {border: 1px solid #01B0AA;border-top: none;}.customWindowContent th {text-align: center;color: #FF7;border: 1px solid #01B0AA;}.customWindowContent thead th {background-color: #01736D;font-size: 14px;}.customWindowContent td {text-align: center;}.customWindowContent .bRight {border-right: 1px solid #01B0AA;}</style>');
-    if (ENABLE_CHAT_BATTLE_SWAP) {
-        addChatSwap();
+    if (window.WebSocket.name == 'WebSocket') {
+        if (confirm('RoA Websocket script is required to run Avabur Enhancer. Would you like to install it now?')) {
+            window.open("https://github.com/edvordo/RoA-WSHookUp/raw/master/RoA-WSHookUp.user.js");
+        };
+      } else {
+        $('head').append('<style>.ui-icon, .ui-widget-content .ui-icon {background-image: none;}.closeCustomWindow {position: absolute;right: -12px;top: -12px;font-size: 20px;text-align: center;border-radius: 40px;border: 1px solid black;background: transparent linear-gradient(to bottom, #008681 0%, #003533 100%) repeat scroll 0% 0%;width: 30px;}.closeCustomWindow a {text-decoration: none;}.customWindowWrapper {display: none;z-index: 99;position: absolute !important;top: 120px;left: 15%;}.customWindowContent {padding: 5px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px}.customWindowContent table {width: 100%;font-size: 12px;}.customWindowContent tbody {border: 1px solid #01B0AA;border-top: none;}.customWindowContent th {text-align: center;color: #FF7;border: 1px solid #01B0AA;}.customWindowContent thead th {background-color: #01736D;font-size: 14px;}.customWindowContent td {text-align: center;}.customWindowContent .bRight {border-right: 1px solid #01B0AA;}</style>');
+        if (ENABLE_CHAT_BATTLE_SWAP) {
+            addChatSwap();
+        }
+        if (ENABLE_CHAT_USER_COLOR_PICKER) {
+            addChatColorPicker();
+        }
+        if (ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
+            addTimeCounter();
+        }
+        if (ENABLE_BATTLE_TRACKER) {
+            addBattleTracker();
+        }
+        if (ENABLE_CLAN_DONATION_TABLE_MOD) {
+            addClanDonationMod();
+        }
+        if (ENABLE_INGREDIENT_TRACKER) {
+            addIngredientTracker();
+        }
+        if (ENABLE_DROP_TRACKER) {
+            addDropTracker();
+        }
+        if (ENABLE_XP_GOLD_RESOURCE_PER_HOUR || ENABLE_DROP_TRACKER) {
+            timeCounter();
+            setInterval(timeCounter, 1000);
+        }
+        addMarketButton();
     }
-    if (ENABLE_CHAT_USER_COLOR_PICKER) {
-        addChatColorPicker();
-    }
-    if (ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
-        addTimeCounter();
-    }
-    if (ENABLE_BATTLE_TRACKER) {
-        addBattleTracker();
-    }
-    if (ENABLE_CLAN_DONATION_TABLE_MOD) {
-        addClanDonationMod();
-    }
-    if (ENABLE_INGREDIENT_TRACKER) {
-        addIngredientTracker();
-    }
-    if (ENABLE_DROP_TRACKER) {
-        addDropTracker();
-    }
-    if (ENABLE_XP_GOLD_RESOURCE_PER_HOUR || ENABLE_DROP_TRACKER) {
-        timeCounter();
-        setInterval(timeCounter, 1000);
-    }
-    addMarketButton();
-
 });
 
 // THIS SECTION IS RUN EVERY TIME THE BROWSER RECEIVES A DYNAMIC UPDATE USING AJAX
@@ -933,7 +861,7 @@ function parseAutoTradePhp(harvest) {
                 }
                 incrementCell(id);
             });
-            
+
         }
         calcPercentCells();
     }
