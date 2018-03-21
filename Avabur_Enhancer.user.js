@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.1
+// @version      1.0.2
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix
 // @match        https://avabur.com/game
@@ -78,17 +78,9 @@ if (localStorage.peopleMod) {
     peopleMod = JSON.parse(localStorage.peopleMod);
 }
 
-window.addEventListener('load', function() {
-    // your code here
-    if (window.WebSocket.name == 'WebSocket') {
-        if (confirm('RoA Websocket script is required to run Avabur Enhancer. Would you like to install it now?')) {
-            window.open("https://github.com/edvordo/RoA-WSHookUp/raw/master/RoA-WSHookUp.user.js");
-        };
-    }
-}, false);
 
 // THIS SECTION RUNS ONCE WHEN THE PAGE LOADS
-$(function() {
+window.addEventListener('load', function() {
     if (window.WebSocket.name == 'WebSocket') {
         if (confirm('RoA Websocket script is required to run Avabur Enhancer. Would you like to install it now?')) {
             window.open("https://github.com/edvordo/RoA-WSHookUp/raw/master/RoA-WSHookUp.user.js");
