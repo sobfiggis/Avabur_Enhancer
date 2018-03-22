@@ -117,29 +117,29 @@ window.addEventListener('load', function() {
 });
 
 // THIS SECTION IS RUN EVERY TIME THE BROWSER RECEIVES A DYNAMIC UPDATE USING AJAX
-$(document).on('roa-ws:battle', function(e, data){
+$(document).on('roa-ws:battle', function(e, data) {
     parseAutobattlePhp(data.results);
 });
 
-$(document).on('roa-ws:harvest', function(e, data){
+$(document).on('roa-ws:harvest', function(e, data) {
     parseAutoTradePhp(data.results);
 });
 
-$(document).on('roa-ws:craft', function(e, data){
+$(document).on('roa-ws:craft', function(e, data) {
     parseAutocraftPhp(data.results);
 });
 
-$(document).on('roa-ws:page:clan_donations', function(e, data){
+$(document).on('roa-ws:page:clan_donations', function(e, data) {
     if (ENABLE_CLAN_DONATION_TABLE_MOD) {
         parseClanDonationsPhp(data.results);
     }
 });
 
-$(document).on('roa-ws:page:boosts', function(e, data){
+$(document).on('roa-ws:page:boosts', function(e, data) {
     parseBoostsPhp(data);
 });
 
-$(document).on('roa-ws:page:market', function(e, data){
+$(document).on('roa-ws:page:market', function(e, data) {
     // not entirely sure what this does, but I'd wager a guess it doesn't work anyway
     // orig code:
     //     $(document).ready(function() { addIngredientButton(); });
@@ -282,76 +282,60 @@ function processClanDonationTable() {
 
     // Add additional attributes to each cell that contain it's original value and the percent format
     $('.donator_list_crystals').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalCrystals).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalCrystals).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_platinum').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalPlatinum).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalPlatinum).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_gold').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalGold).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalGold).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_food').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalFood).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalFood).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_wood').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalWood).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalWood).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_iron').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalIron).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalIron).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_stone').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalStone).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalStone).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
     $('.donator_list_experience').each(function() {
-        $(this).attr(
-            {
-                'data-format-orig': $(this).text(),
-                'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalExperience).toFixed(2) + " %",
-                'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
-            }
-        );
+        $(this).attr({
+            'data-format-orig': $(this).text(),
+            'data-format-perc': (parseInt($(this).attr('title').replace(/,/g, '')) * 100 / totals.totalExperience).toFixed(2) + " %",
+            'data-format-full': parseInt($(this).attr('title').replace(/,/g, '')).toLocaleString()
+        });
     });
 
     donationsTable.data('processed', 1);
@@ -360,43 +344,41 @@ function processClanDonationTable() {
 function addClanDonationMod() {
     $('#myClanDonationTable').before(
         $('<button>')
-            .attr(
-                {
-                    type: 'button',
-                    'data-current-view': 'orig'
-                }
-            )
-            .addClass('btn btn-primary btn-sm')
-            .append('Show full view')
-            .on('click', function(){
-                if ($('#myClanDonationTable').data('processed') == 0) {
-                    processClanDonationTable();
-                }
-                var button = $(this);
-                var currentView = button.data('current-view');
+        .attr({
+            type: 'button',
+            'data-current-view': 'orig'
+        })
+        .addClass('btn btn-primary btn-sm')
+        .append('Show full view')
+        .on('click', function() {
+            if ($('#myClanDonationTable').data('processed') == 0) {
+                processClanDonationTable();
+            }
+            var button = $(this);
+            var currentView = button.data('current-view');
 
-                switch (currentView) {
-                    case 'orig':
-                        currentView = 'full';
-                        button.data('current-view', currentView).text('Show percentage view');
-                        break;
+            switch (currentView) {
+                case 'orig':
+                    currentView = 'full';
+                    button.data('current-view', currentView).text('Show percentage view');
+                    break;
 
-                    case 'full':
-                        currentView = 'perc';
-                        button.data('current-view', currentView).text('Show original view');
-                        break;
+                case 'full':
+                    currentView = 'perc';
+                    button.data('current-view', currentView).text('Show original view');
+                    break;
 
-                    case 'perc':
-                        currentView = 'orig';
-                        button.data('current-view', currentView).text('Show full view');
-                        break;
-                }
+                case 'perc':
+                    currentView = 'orig';
+                    button.data('current-view', currentView).text('Show full view');
+                    break;
+            }
 
-                $('.donator_list_crystals, .donator_list_platinum, .donator_list_gold, .donator_list_food, .donator_list_wood, .donator_list_iron, .donator_list_stone, .donator_list_experience').each(function() {
-                    $(this).text($(this).data('format-' + currentView));
-                });
+            $('.donator_list_crystals, .donator_list_platinum, .donator_list_gold, .donator_list_food, .donator_list_wood, .donator_list_iron, .donator_list_stone, .donator_list_experience').each(function() {
+                $(this).text($(this).data('format-' + currentView));
+            });
 
-            })
+        })
     );
 }
 
@@ -491,7 +473,7 @@ function parseAutocraftPhp(craft) {
         if (craft.a.sr) {
             for (var statKey in craft.a.sr.stats) {
                 var id = "";
-                switch(statKey) {
+                switch (statKey) {
                     case 'strength':
                         id = 'strC';
                         break;
@@ -606,7 +588,7 @@ function parseAutobattlePhp(battle) {
         if (battle.b.sr) {
             for (var statKey in battle.b.sr.stats) {
                 var id = "";
-                switch(statKey) {
+                switch (statKey) {
                     case 'strength':
                         id = 'strK';
                         break;
@@ -716,48 +698,48 @@ function parseAutobattlePhp(battle) {
                 healMax = Math.max(healMax, act.dmg);
                 healMin = Math.min(healMin, act.dmg);
             } else if (act.type == "counter") {
-                counterMax = Math.max(counterMax, act.dmg);
-                counterMin = Math.min(counterMin, act.dmg);
-            } else if (act.type == "spell") {
-                spellMax = Math.max(spellMax, act.dmg);
-                spellMin = Math.min(spellMin, act.dmg);
-            } else if (act.type == "hit") {
-                // Track other variables
-                numAttacks += act.hits + act.misses;
-                numHits += act.hits;
-                numMisses += act.misses;
-                numCrits += act.crit;
-                if (act.hits + act.misses > 1) {
-                    numMulti += act.hits + act.misses - 1;
-                    // If all attacks in multi are crit, add to crit total. Min/Max not tracked across multistrike.
-                    if (act.hits == act.crit) {
-                        critTot += act.dmg;
-                    }
-                    // If no attacks in multi are crit, add to hit total. Min/Max not tracked across multistrike.
-                    else if (!act.crit) {
-                        hitTot += act.dmg;
-                    }
-                    // If some attacks in multi are crit but not all, we cannot track totals properly so tally up untracked hits to get a proper average.
-                    else {
-                        numUntrackedHits += act.hits;
-                        numUntrackedCrits += act.crit;
-                    }
-                } else if (act.crit) {
+            counterMax = Math.max(counterMax, act.dmg);
+            counterMin = Math.min(counterMin, act.dmg);
+        } else if (act.type == "spell") {
+            spellMax = Math.max(spellMax, act.dmg);
+            spellMin = Math.min(spellMin, act.dmg);
+        } else if (act.type == "hit") {
+            // Track other variables
+            numAttacks += act.hits + act.misses;
+            numHits += act.hits;
+            numMisses += act.misses;
+            numCrits += act.crit;
+            if (act.hits + act.misses > 1) {
+                numMulti += act.hits + act.misses - 1;
+                // If all attacks in multi are crit, add to crit total. Min/Max not tracked across multistrike.
+                if (act.hits == act.crit) {
                     critTot += act.dmg;
-                    critMax = Math.max(critMax, act.dmg);
-                    critMin = Math.min(critMin, act.dmg);
-                    critAvg = (critTot / (numCrits - numUntrackedCrits)).toFixed(0);
-                } else {
-                    hitTot += act.dmg;
-                    hitMax = Math.max(hitMax, act.dmg);
-                    if (act.dmg) {
-                        hitMin = Math.min(hitMin, act.dmg);
-                    }
-                    hitAvg = (hitTot / (numHits - numCrits - numUntrackedHits + numUntrackedCrits)).toFixed(0);
                 }
+                // If no attacks in multi are crit, add to hit total. Min/Max not tracked across multistrike.
+                else if (!act.crit) {
+                    hitTot += act.dmg;
+                }
+                // If some attacks in multi are crit but not all, we cannot track totals properly so tally up untracked hits to get a proper average.
+                else {
+                    numUntrackedHits += act.hits;
+                    numUntrackedCrits += act.crit;
+                }
+            } else if (act.crit) {
+                critTot += act.dmg;
+                critMax = Math.max(critMax, act.dmg);
+                critMin = Math.min(critMin, act.dmg);
+                critAvg = (critTot / (numCrits - numUntrackedCrits)).toFixed(0);
             } else {
-                console.log("Unknown player attack type: " + act.type + ": " + xhr.responseText);
-            } else {
+                hitTot += act.dmg;
+                hitMax = Math.max(hitMax, act.dmg);
+                if (act.dmg) {
+                    hitMin = Math.min(hitMin, act.dmg);
+                }
+                hitAvg = (hitTot / (numHits - numCrits - numUntrackedHits + numUntrackedCrits)).toFixed(0);
+            }
+        } else {
+            console.log("Unknown player attack type: " + act.type + ": " + xhr.responseText);
+        } else {
             if (act.type == "hit") {
                 if (act.hits && act.dmg) {
                     takenDamage = true;
@@ -871,7 +853,7 @@ function parseAutoTradePhp(harvest) {
         } else if (actionsTimeToLevel <= 59) {
             $('#actionsTimeToLevel').text('Estimated time: ' + actionsTimeToLevel + ' mins');
         } else {
-            $('#actionsTimeToLevel').text('Estimated time: ' + Math.floor(actionsTimeToLevel/60.0) + ' hours, ' + (actionsTimeToLevel % 60) + ' mins');
+            $('#actionsTimeToLevel').text('Estimated time: ' + Math.floor(actionsTimeToLevel / 60.0) + ' hours, ' + (actionsTimeToLevel % 60) + ' mins');
         }
         //////////////////////
     }
@@ -896,7 +878,7 @@ function parseAutoTradePhp(harvest) {
         if (harvest.a.sr) {
             for (var statKey in harvest.a.sr.stats) {
                 var id = "";
-                switch(statKey) {
+                switch (statKey) {
                     case 'strength':
                         id = 'strH';
                         break;
@@ -965,15 +947,15 @@ function parseAutoTradePhp(harvest) {
 
 function parseClanDonationsPhp(data) {
     var log = {
-        'data-total-crystals'  : 0,
-        'data-total-platinum'  : 0,
-        'data-total-gold'      : 0,
-        'data-total-food'      : 0,
-        'data-total-wood'      : 0,
-        'data-total-iron'      : 0,
-        'data-total-stone'     : 0,
+        'data-total-crystals': 0,
+        'data-total-platinum': 0,
+        'data-total-gold': 0,
+        'data-total-food': 0,
+        'data-total-wood': 0,
+        'data-total-iron': 0,
+        'data-total-stone': 0,
         'data-total-experience': 0,
-        'data-processed'       : 0
+        'data-processed': 0
     };
     $('#toggleDonationPercent').attr("checked", false);
 
@@ -1052,12 +1034,12 @@ function timeCounter() {
         var diffSec = Math.round((Date.now() - Number($('#battleGains .timeCounter').first().attr('title'))) / 1000);
 
 
-//Custom edits by curbside for #honma
+        //Custom edits by curbside for #honma
         var SI_PREFIXES = ["", "k", "M", "B", "T", "P", "E"];
 
-        function abbreviateNumber(number){
+        function abbreviateNumber(number) {
             var tier = Math.log10(number) / 3 | 0;
-            if(tier == 0) return number;
+            if (tier == 0) return number;
             var prefix = SI_PREFIXES[tier];
             var scale = Math.pow(10, tier * 3);
             var scaled = number / scale;
@@ -1073,19 +1055,19 @@ function timeCounter() {
         $('#clanGoldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanGold').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
         $('#resPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsResources').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
         $('#clanResPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanResources').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////
 
-//curbside
+        //curbside
         var battleToLevel = Math.floor((Number(batTot) - Number(batCur)) / Number(batNum));
         $('#battleToLevel').text(battleToLevel.toString() + " kills until level.");
         var battleTimeToLevel = Math.ceil(battleToLevel / killsPerMin);
-//console.log(killsPerMin + ' -- ' + battleTimeToLevel);
+        //console.log(killsPerMin + ' -- ' + battleTimeToLevel);
         if (killsPerMin <= 0) {
             $('#battleTimeToLevel').text('Estimated time: calculating');
         } else if (battleTimeToLevel <= 59) {
             $('#battleTimeToLevel').text('Estimated time: ' + battleTimeToLevel + ' mins');
         } else {
-            $('#battleTimeToLevel').text('Estimated time: ' + Math.floor(battleTimeToLevel/60.0) + ' hours, ' + (battleTimeToLevel % 60) + ' mins');
+            $('#battleTimeToLevel').text('Estimated time: ' + Math.floor(battleTimeToLevel / 60.0) + ' hours, ' + (battleTimeToLevel % 60) + ' mins');
         }
         $('#avgResXpGain').text(Math.floor((Number(batTot) - Number(batCur)) / Number(batNum)).toString() + " kills until level.");
 
@@ -1106,7 +1088,7 @@ function timeCounter() {
 
         var tfq;
 
-// battle quest calc
+        // battle quest calc
         if ($('#bq_info').text().indexOf("Recover") > -1) {
             tfq = ((timeForQuest * 10) / 10);
             tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
@@ -1124,7 +1106,7 @@ function timeCounter() {
             }
         } else {
             tfq = Math.floor(((timeForQuest * 10) / 10));
-            tfq = Math.floor(tfq - (tfq * (bQuestReduction /100)));
+            tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
 
             // if quest time is below 60, use minutes
             if (tfq < 60) {
@@ -1138,7 +1120,7 @@ function timeCounter() {
             }
         }
 
-// harvest quest calculator
+        // harvest quest calculator
 
         if ($('#tq_info').text().length > -1) {
             var numHarvs = $('.numHarvests').text();
@@ -1195,8 +1177,7 @@ function loadIngredientDropList() {
 }
 
 function fadeOutNonQuest() {
-    if (ENABLE_QUEST_SCREEN_DIM)
-    {
+    if (ENABLE_QUEST_SCREEN_DIM) {
         $('#header, #bottomWrapper, #footer, #navigationWrapper, #contentWrapper, #chatWrapper, #wrapper>div.row>div:not(:first-child)').fadeTo('opacity', 0.2);
         questNoticeOn = true;
     }
