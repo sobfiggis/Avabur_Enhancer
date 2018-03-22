@@ -136,7 +136,7 @@ $(document).on('roa-ws:page:clan_donations', function(e, data){
 });
 
 $(document).on('roa-ws:page:boosts', function(e, data){
-    parseBoostsPhp(data.results);
+    parseBoostsPhp(data);
 });
 
 $(document).on('roa-ws:page:market', function(e, data){
