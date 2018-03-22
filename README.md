@@ -2,13 +2,13 @@
 
 - [Instructions](#instructions)
 - [Features](#features)
-  - [Chat & Battle Location Swap](#chat---battle-location-swap)
+  - [Chat & Battle Location Swap](#chat--battle-location-swap)
   - [Customizable Main Chat Colors Eor Each Player](#customizable-main-chat-colors-eor-each-player)
   - [Quest Complete Helper](#quest-complete-helper)
-  - [Battle Tracker & XP/Gold/Resource Per Hour](#battle-tracker---xp-gold-resource-per-hour)
-  - [Drop Tracker & Ingredient Tracker](#drop-tracker---ingredient-tracker)
+  - [Battle Tracker & XP/Gold/Resource Per Hour](#battle-tracker--xpgoldresource-per-hour)
+  - [Drop Tracker & Ingredient Tracker](#drop-tracker--ingredient-tracker)
   - [Clan donation list modification](#clan-donation-list-modification)
-  - [Real % reduction on Quest Boost](#real---reduction-on-quest-boost)
+  - [Real % reduction on Quest Boost](#real--reduction-on-quest-boost)
 
 ## Instructions
 Before using the Battle Tracker script make sure you go to Account Management -> Preferences -> and check the "Display battles round-by-round..." box. If not then the rounds don't get sent.
