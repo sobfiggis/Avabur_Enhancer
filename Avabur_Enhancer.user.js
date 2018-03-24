@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.3
+// @version      1.0.4
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
-// @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix
+// @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix, Reltorakii
 // @match        https://avabur.com/game
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
@@ -136,7 +136,9 @@ $(document).on('roa-ws:page:clan_donations', function(e, data) {
 });
 
 $(document).on('roa-ws:page:boosts', function(e, data) {
-    parseBoostsPhp(data);
+    if (ENABLE_QUEST_BOOST_REAL_REDUCTION) {
+        parseBoostsPhp(data);
+    }
 });
 
 $(document).on('roa-ws:page:market', function(e, data) {
@@ -346,6 +348,7 @@ function addClanDonationMod() {
         $('<button>')
         .attr({
             type: 'button',
+            id: 'clanDonationsDataViewToggle',
             'data-current-view': 'orig'
         })
         .addClass('btn btn-primary btn-sm')
@@ -947,31 +950,32 @@ function parseAutoTradePhp(harvest) {
 
 function parseClanDonationsPhp(data) {
     var log = {
-        'data-total-crystals': 0,
-        'data-total-platinum': 0,
-        'data-total-gold': 0,
-        'data-total-food': 0,
-        'data-total-wood': 0,
-        'data-total-iron': 0,
-        'data-total-stone': 0,
-        'data-total-experience': 0,
-        'data-processed': 0
+        'total-crystals': 0,
+        'total-platinum': 0,
+        'total-gold': 0,
+        'total-food': 0,
+        'total-wood': 0,
+        'total-iron': 0,
+        'total-stone': 0,
+        'total-experience': 0,
+        'processed': 0
     };
     $('#toggleDonationPercent').attr("checked", false);
 
     for (var i in data) {
         var info = data[i];
-        log['data-total-crystals'] += info.hasOwnProperty('crystals') ? info.crystals : 0;
-        log['data-total-platinum'] += info.hasOwnProperty('platinum') ? info.platinum : 0;
-        log['data-total-gold'] += info.hasOwnProperty('gold') ? info.gold : 0;
-        log['data-total-food'] += info.hasOwnProperty('food') ? info.food : 0;
-        log['data-total-wood'] += info.hasOwnProperty('wood') ? info.wood : 0;
-        log['data-total-iron'] += info.hasOwnProperty('iron') ? info.iron : 0;
-        log['data-total-stone'] += info.hasOwnProperty('stone') ? info.stone : 0;
-        log['data-total-experience'] += info.hasOwnProperty('experiences') ? info.experiences : 0;
+        log['total-crystals'] += info.hasOwnProperty('crystals') ? info.crystals : 0;
+        log['total-platinum'] += info.hasOwnProperty('platinum') ? info.platinum : 0;
+        log['total-gold'] += info.hasOwnProperty('gold') ? info.gold : 0;
+        log['total-food'] += info.hasOwnProperty('food') ? info.food : 0;
+        log['total-wood'] += info.hasOwnProperty('wood') ? info.wood : 0;
+        log['total-iron'] += info.hasOwnProperty('iron') ? info.iron : 0;
+        log['total-stone'] += info.hasOwnProperty('stone') ? info.stone : 0;
+        log['total-experience'] += info.hasOwnProperty('experiences') ? info.experiences : 0;
     }
 
-    $('#myClanDonationTable').attr(log);
+    $('#myClanDonationTable').data(log);
+    $('#clanDonationsDataViewToggle').data('current-view', 'orig').text('Show full view');
 }
 
 function parseResetSessionStatsPhp() {
