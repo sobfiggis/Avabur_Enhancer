@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.4
+// @version      1.0.5
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix, Reltorakii
 // @match        https://avabur.com/game
@@ -149,9 +149,9 @@ $(document).on('roa-ws:page:market', function(e, data) {
 });
 
 
-$('#clearBattleStats').click(function() {
-    parseResetSessionStatsPhp();
-});
+$('#clearBattleStats').click(parseResetSessionStatsPhp);
+$('#clearTradeskillStats').click(parseResetSessionStatsPhp);
+$('#clearCraftingStats').click(parseResetSessionStatsPhp);
 
 // FUNCTIONS TO ADD GUI AREAS TO THE DOM
 
