@@ -845,8 +845,8 @@ function parseAutoTradePhp(harvest) {
         $('#avgXpGain').text(avgXpGain.toFixed(0));
 
         //estimated actions to level
-        var totalXpToLevel = harvest.a.tc;
-        var currentXp = harvest.a.txp;
+        var totalXpToLevel = harvest.p[harvest.a.s].tnl;
+        var currentXp = harvest.p[harvest.a.s].xp;
         var actionsToLevel = (totalXpToLevel - currentXp) / avgXpGain;
         // console.log(harvest.a.tc + ' -- ' + harvest.a.txp + ' -- ' + actionsToLevel);
         $('#actionsToLevel').text(actionsToLevel.toFixed(0).toString() + " actions until level (est).");
