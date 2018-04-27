@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.6
+// @version      1.0.7
 // @description  Tracks certain data within the game to create additional features and calculate additional informaiton.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPheonix, Reltorakii
 // @match        https://*.avabur.com/game*
@@ -845,8 +845,8 @@ function parseAutoTradePhp(harvest) {
         $('#avgXpGain').text(avgXpGain.toFixed(0));
 
         //estimated actions to level
-        var totalXpToLevel = harvest.a.tc;
-        var currentXp = harvest.a.txp;
+        var totalXpToLevel = harvest.p[harvest.a.s].tnl;
+        var currentXp = harvest.p[harvest.a.s].xp;
         var actionsToLevel = (totalXpToLevel - currentXp) / avgXpGain;
         // console.log(harvest.a.tc + ' -- ' + harvest.a.txp + ' -- ' + actionsToLevel);
         $('#actionsToLevel').text(actionsToLevel.toFixed(0).toString() + " actions until level (est).");
