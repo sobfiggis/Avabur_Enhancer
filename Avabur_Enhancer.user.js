@@ -550,7 +550,6 @@ function parseAutocraftPhp(craft) {
 }
 
 function parseAutocarvePhp(carve) {
-    console.log(carve);
     if (ENABLE_QUEST_COMPLETE_NOTICE && (carve.a.qf && carve.a.qf.indexOf("You have completed your quest!  Visit the") > -1)) {
         fadeOutNonQuest();
     } else if (questNoticeOn) {
