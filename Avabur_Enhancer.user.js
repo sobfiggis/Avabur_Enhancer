@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.8
+// @version      1.0.9
 // @description  Tracks certain data within the game to create additional features and calculate additional information.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPhoenix, Reltorakii
 // @match        https://*.avabur.com/game*
@@ -1249,12 +1249,12 @@ function timeCounter() {
         $('#dropsTableTimer .timeCounterHr').text(('0' + Math.floor(diffSec / 3600)).slice(-2));
         $('#dropsTableTimer .timeCounterMin').text(('0' + Math.floor(diffSec / 60) % 60).slice(-2));
         $('#dropsTableTimer .timeCounterSec').text(('0' + diffSec % 60).slice(-2));
-        $('#statsPerHr').text(Math.floor((Number($('.numStatsK').first().text()) + Number($('.numStatsH').first().text()) + Number($('.numStatsC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#lootPerHr').text(Math.floor((Number($('.numLootK').first().text()) + Number($('.numLootH').first().text()) + Number($('.numLootC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#ingredientsPerHr').text(Math.floor((Number($('.numIngredientsK').first().text()) + Number($('.numIngredientsH').first().text()) + Number($('.numIngredientsC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#LocketQuestPerHr').text(Math.floor((Number($('.numQuestK').first().text()) + Number($('.numQuestH').first().text()) + Number($('.numQuestC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#qItemPerHr').text(Math.floor((Number($('.itemQuestK').first().text()) + Number($('.itemQuestH').first().text()) + Number($('.itemQuestC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
-        $('#platHour').text(Math.floor((Number($('.platTotalK').first().text()) + Number($('.platTotalH').first().text()) + Number($('.platTotalC').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
+        $('#statsPerHr').text(Math.floor((Number($('.numStatsK').first().text()) + Number($('.numStatsH').first().text()) + Number($('.numStatsCr').first().text()) + Number($('.numStatsCa').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
+        $('#lootPerHr').text(Math.floor((Number($('.numLootK').first().text()) + Number($('.numLootH').first().text()) + Number($('.numLootCr').first().text()) + Number($('.numLootCa').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
+        $('#ingredientsPerHr').text(Math.floor((Number($('.numIngredientsK').first().text()) + Number($('.numIngredientsH').first().text()) + Number($('.numIngredientsCr').first().text()) + Number($('.numIngredientsCa').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
+        $('#LocketQuestPerHr').text(Math.floor((Number($('.numQuestK').first().text()) + Number($('.numQuestH').first().text()) + Number($('.numQuestCr').first().text()) + Number($('.numQuestCa').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
+        $('#qItemPerHr').text(Math.floor((Number($('.itemQuestK').first().text()) + Number($('.itemQuestH').first().text()) + Number($('.itemQuestCr').first().text()) + Number($('.itemQuestCa').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
+        $('#platHour').text(Math.floor((Number($('.platTotalK').first().text()) + Number($('.platTotalH').first().text()) + Number($('.platTotalCr').first().text()) + Number($('.platTotalCa').first().text())) / (diffSec / 3600)).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + " / Hr");
     }
 }
 
