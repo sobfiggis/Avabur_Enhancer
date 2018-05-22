@@ -5,12 +5,22 @@
 // @description  Tracks certain data within the game to create additional features and calculate additional information.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPhoenix, Reltorakii
 // @match        https://*.avabur.com/game*
-// @grant        none
+// @require      https://momentjs.com/downloads/moment.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/2.2.2/moment-duration-format.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/2.2.2/moment-duration-format.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js
 // @downloadURL  https://raw.githubusercontent.com/sobfiggis/Avabur_Enhancer/master/Avabur_Enhancer.user.js
 // @run-at       document-idle
 // ==/UserScript==
 
+
+var momentDurationFormatSetup = window.momentDurationFormatSetup;
+
+momentDurationFormatSetup(moment);
+window.momentDurationFormatSetup(moment);
+console.log(typeof moment.duration.fn.format === "function");
+// true
+console.log(typeof moment.duration.format === "function");
 
 /**************************************************/
 /****************** USER OPTIONS ******************/
@@ -940,17 +950,32 @@ function parseAutoTradePhp(harvest) {
 
         //estimated actions to level
         var totalXpToLevel = harvest.p[harvest.a.s].tnl;
+
         var currentXp = harvest.p[harvest.a.s].xp;
         var actionsToLevel = (totalXpToLevel - currentXp) / avgXpGain;
         // console.log(harvest.a.tc + ' -- ' + harvest.a.txp + ' -- ' + actionsToLevel);
         $('#actionsToLevel').text(actionsToLevel.toFixed(0).toString() + " actions until level (est).");
         var actionsTimeToLevel = Math.ceil(actionsToLevel / harvestsPerMin);
-        if (harvestsPerMin <= 0) {
+        var current_exp = $('#currentXP').text().replace(/,/g, '');
+        var exp_remaining = totalXpToLevel - current_exp;
+        var avg_harvest_exp = Number($('#avgXpGain').text());
+        var total_harvest_exp = Number($('#gainsAttempts').text().replace(/,/g,'')) * avg_harvest_exp;
+        var time_h = Number($('.timeCounterHr').text().slice(0,2)) * 3600;
+        var time_m = Number($('.timeCounterMin').text().slice(0,2)) * 60;
+        var time_s = Number($('.timeCounterSec').text().slice(0,2));
+        var total_time = time_h+time_m+time_s;
+        var exp_per_second = total_harvest_exp / total_time;
+        //var exp_per_battle = $('.battleExpGain').eq(0).text().replace(/\D+/g, '');
+        var total_in_seconds = exp_remaining / exp_per_second;
+
+
+        var seconds_difference = Math.round((Date.now() - Number($('#tradeskillGains .timeCounter').first().attr('title'))) / 1000);
+        var formatted = moment.duration(total_in_seconds, 'seconds').format('HH:mm:ss');
+        console.log(formatted);
+        if (formatted.indexOf('Invalid') > -1) {
             $('#actionsTimeToLevel').text('Estimated time: calculating');
-        } else if (actionsTimeToLevel <= 59) {
-            $('#actionsTimeToLevel').text('Estimated time: ' + actionsTimeToLevel + ' mins');
         } else {
-            $('#actionsTimeToLevel').text('Estimated time: ' + Math.floor(actionsTimeToLevel / 60.0) + ' hours, ' + (actionsTimeToLevel % 60) + ' mins');
+          $('#actionsTimeToLevel').text('Time until level: ' + formatted);
         }
         //////////////////////
     }
@@ -1113,24 +1138,48 @@ function timeCounter() {
     if (ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
 
         //  Starting here grab the numbers required for calculating the # of battles until level
-        var btlC = $('#currentXP').attr('title');
-        var batCur = (btlC).replace(/\D+/g, '');
-        var btlT = $('#levelCost').text().replace(/[^0-9\.]+/g, '');
-        var batTot;
+        var current_exp_formatted = $('#currentXP').attr('title').replace(/\D+/g, '');
+        var level_cost = $('#levelCost').text().replace(/[^0-9\.]+/g, '');
+        var level_cost_formatted;
 
-        if ((Number(btlT) <= 10000) && (Number(btlT) >= 100)) {
-            batTot = Number(Number(btlT) * 1000000);
-        } else if (Number(btlT) <= 99.99) {
-            batTot = Number(Number(btlT) * 1000000000);
-        } else if (Number(btlT) > 10000) {
-            batTot = Number(btlT);
+        if ((Number(level_cost) <= 10000) && (Number(level_cost) >= 100)) {
+          level_cost_formatted = Number(Number(level_cost) * 1000000);
+        } else if (Number(level_cost) <= 99.99) {
+          level_cost_formatted = Number(Number(level_cost) * 1000000000);
+        } else if (Number(level_cost) > 10000) {
+          level_cost_formatted = Number(level_cost);
         }
 
-        var batNum = $('.battleExpGain').eq(0).text().replace(/\D+/g, '');
+        var expanded_xp;
+        switch ($('#gainsXP').text().replace(/[0-9[&\/\\#,+()$~%.'":*?<>{}]/g, '')) {
+          case "K":
+          expanded_xp=Number($('#gainsXP').text().replace(/\D+/g, '')) * 1000;
+            break;
+          case "M":
+          expanded_xp=Number($('#gainsXP').text().replace(/\D+/g, '')) * 1000000;
+            break;
+          case "B":
+          expanded_xp=Number($('#gainsXP').text().replace(/\D+/g, '')) * 1000000000
+            break;
+          case "T":
+          expanded_xp=Number($('#gainsXP').text().replace(/\D+/g, '')) * 1000000000000;
+            break;
+          default:
+          expanded_xp=Number($('#gainsXP').text().replace(/\D+/g, ''));
+        }
+
+        var time_h = Number($('.timeCounterHr').text().slice(0,2)) * 3600;
+        var time_m = Number($('.timeCounterMin').text().slice(0,2)) * 60;
+        var time_s = Number($('.timeCounterSec').text().slice(0,2));
+        var total_time = time_h+time_m+time_s;
+        var exp_per_second = expanded_xp / total_time;
+        //var exp_per_battle = $('.battleExpGain').eq(0).text().replace(/\D+/g, '');
+        var exp_remaining = level_cost_formatted - current_exp_formatted;
+        var total_in_seconds = exp_remaining / exp_per_second;
         // Ends here
-
-        var diffSec = Math.round((Date.now() - Number($('#battleGains .timeCounter').first().attr('title'))) / 1000);
-
+        var exp_per_battle = $('.battleExpGain').eq(0).text().replace(/\D+/g, '');
+        var seconds_difference = Math.round((Date.now() - Number($('#battleGains .timeCounter').first().attr('title'))) / 1000);
+        var formatted_time = moment.duration(total_in_seconds, 'seconds').format('HH:mm:ss');
 
         //Custom edits by curbside for #honma
         var SI_PREFIXES = ["", "k", "M", "B", "T", "P", "E"];
@@ -1144,32 +1193,28 @@ function timeCounter() {
             return scaled.toFixed(1) + prefix;
         }
 
-        $('#battleGains .timeCounterHr, #tradeskillGains .timeCounterHr, #craftingBoxGains .timeCounterHr').text(('0' + Math.floor(diffSec / 3600)).slice(-2));
-        $('#battleGains .timeCounterMin, #tradeskillGains .timeCounterMin, #craftingBoxGains .timeCounterMin').text(('0' + Math.floor(diffSec / 60) % 60).slice(-2));
-        $('#battleGains .timeCounterSec, #tradeskillGains .timeCounterSec, #craftingBoxGains .timeCounterSec').text(('0' + diffSec % 60).slice(-2));
-        $('#xpPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsXP').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-        $('#clanXpPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanXP').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-        $('#goldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsGold').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-        $('#clanGoldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanGold').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-        $('#resPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsResources').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-        $('#clanResPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanResources').attr('data-value')) / (diffSec / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+        $('#battleGains .timeCounterHr, #tradeskillGains .timeCounterHr, #craftingBoxGains .timeCounterHr').text(('0' + Math.floor(seconds_difference / 3600)).slice(-2));
+        $('#battleGains .timeCounterMin, #tradeskillGains .timeCounterMin, #craftingBoxGains .timeCounterMin').text(('0' + Math.floor(seconds_difference / 60) % 60).slice(-2));
+        $('#battleGains .timeCounterSec, #tradeskillGains .timeCounterSec, #craftingBoxGains .timeCounterSec').text(('0' + seconds_difference % 60).slice(-2));
+        $('#xpPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsXP').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+        $('#clanXpPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanXP').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+        $('#goldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsGold').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+        $('#clanGoldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanGold').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+        $('#resPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsResources').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
+        $('#clanResPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanResources').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
         ////////////////////////////////////////////////////////
 
         //curbside
-        var battleToLevel = Math.floor((Number(batTot) - Number(batCur)) / Number(batNum));
+        var battleToLevel = Math.floor((Number(level_cost_formatted) - Number(current_exp_formatted)) / Number(exp_per_battle));
         $('#battleToLevel').text(battleToLevel.toString() + " kills until level.");
         var battleTimeToLevel = Math.ceil(battleToLevel / killsPerMin);
         //console.log(killsPerMin + ' -- ' + battleTimeToLevel);
-        if (killsPerMin <= 0) {
+        if (formatted_time.indexOf('Invalid') > -1) {
             $('#battleTimeToLevel').text('Estimated time: calculating');
-        } else if (battleTimeToLevel <= 59) {
-            $('#battleTimeToLevel').text('Estimated time: ' + battleTimeToLevel + ' mins');
         } else {
-            $('#battleTimeToLevel').text('Estimated time: ' + Math.floor(battleTimeToLevel / 60.0) + ' hours, ' + (battleTimeToLevel % 60) + ' mins');
+            $('#battleTimeToLevel').text('Estimated time: ' + formatted_time);
         }
-        $('#avgResXpGain').text(Math.floor((Number(batTot) - Number(batCur)) / Number(batNum)).toString() + " kills until level.");
-
-
+        $('#avgResXpGain').text(Math.floor((Number(level_cost_formatted) - Number(current_exp_formatted)) / Number(exp_per_battle)).toString() + " kills until level.");
     }
 
     if (ENABLE_DROP_TRACKER) {
@@ -1330,8 +1375,3 @@ function addIngredientButton() {
         $("#marketIngredientSell").click();
     });
 }
-<<<<<<< HEAD
-=======
-
-//end
->>>>>>> 43a91fd6e22128ee2218838dfb8f5624196e659e
