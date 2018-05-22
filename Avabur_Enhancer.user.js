@@ -1179,42 +1179,41 @@ function timeCounter() {
         var numKills = $('.numKills').text();
         var killsPerSec = (Number(numKills) / timeInSeconds);
         killsPerMin = (killsPerSec * 60);
-        var questCur = $('#bq_info').children('span').eq(0).text().replace(/\D+/g, '');
-        var questTot = $('#bq_info').children('span').eq(1).text().replace(/\D+/g, '');
-        var timeForQuest = (Number(questTot) - Number(questCur)) / Number(killsPerMin);
-        var bQuestReduction = $('.numQuestK').next().find('span').text();
-
-        var tfq;
+        var quest_current = $('#bq_info').children('span').eq(0).text().replace(/\D+/g, '');
+        var quest_total = $('#bq_info').children('span').eq(1).text().replace(/\D+/g, '');
+        var battle_quest_minutes = (Number(quest_total) - Number(quest_current)) / Number(killsPerMin);
+        var battle_quest_reduction = $('.numQuestK').next().find('span').text();
+        var time_for_quest_formatted;
 
         // battle quest calc
         if ($('#bq_info').text().indexOf("Recover") > -1) {
-            tfq = ((timeForQuest * 10) / 10);
-            tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
-            var qP = Number($(".itemQuestK").text());
-            tfq = Math.floor((tfq / (qP / numKills)));
+          time_for_quest_formatted = ((battle_quest_minutes * 10) / 10);
+          time_for_quest_formatted = Math.floor(time_for_quest_formatted - (time_for_quest_formatted * (battle_quest_reduction / 100)));
+          var quest_items = Number($(".itemQuestK").text());
+          time_for_quest_formatted = Math.floor((time_for_quest_formatted / (quest_items / numKills)));
             // if quest timer is below 60, use minutes
-            if (tfq < 60) {
-                $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
+            if (time_for_quest_formatted < 60) {
+                $('.minsToQuest').text("Around " + (time_for_quest_formatted).toString() + " minutes left.");
             }
             // if quest timer is above 59, use hours and minutes.
-            else if (tfq > 59) {
-                var hourz = ((tfq - (tfq % 60)) / 60);
-                tfq = (tfq - (hourz * 60));
-                $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (tfq).toString() + " minutes left.");
+            else if (time_for_quest_formatted > 59) {
+                var hourz = ((time_for_quest_formatted - (time_for_quest_formatted % 60)) / 60);
+                time_for_quest_formatted = (time_for_quest_formatted - (hourz * 60));
+                $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (time_for_quest_formatted).toString() + " minutes left.");
             }
         } else {
-            tfq = Math.floor(((timeForQuest * 10) / 10));
-            tfq = Math.floor(tfq - (tfq * (bQuestReduction / 100)));
+          time_for_quest_formatted = Math.floor(((battle_quest_minutes * 10) / 10));
+          time_for_quest_formatted = Math.floor(time_for_quest_formatted - (time_for_quest_formatted * (battle_quest_reduction / 100)));
 
             // if quest time is below 60, use minutes
-            if (tfq < 60) {
-                $('.minsToQuest').text("Around " + (tfq).toString() + " minutes left.");
+            if (time_for_quest_formatted < 60) {
+                $('.minsToQuest').text("Around " + (time_for_quest_formatted).toString() + " minutes left.");
             }
             // if quest timer is above 59 minutes use hrs and minutes.
-            else if (tfq > 59) {
-                var hourz = ((tfq - (tfq % 60)) / 60);
-                tfq = (tfq - (hourz * 60));
-                $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (tfq).toString() + " minutes left.");
+            else if (time_for_quest_formatted > 59) {
+                var hourz = ((time_for_quest_formatted - (time_for_quest_formatted % 60)) / 60);
+                time_for_quest_formatted = (time_for_quest_formatted - (hourz * 60));
+                $('.minsToQuest').text("Around " + (hourz).toString() + " hrs " + (time_for_quest_formatted).toString() + " minutes left.");
             }
         }
 
@@ -1224,23 +1223,23 @@ function timeCounter() {
             var numHarvs = $('.numHarvests').text();
             var harvestsPerSec = (Number(numHarvs) / timeInSeconds);
             harvestsPerMin = (harvestsPerSec * 60);
-            var qC = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
-            var qT = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
-            var timeForHarvQuest = (Number(qT) - Number(qC)) / Number(harvestsPerMin);
-            var hQuestReduction = $('.numQuestH').next().find('span').text();
-            var tfqh;
+            var harvest_quest_current = $('#tq_info').children('span').eq(0).text().replace(/\D+/g, '');
+            var harvest_quest_total = $('#tq_info').children('span').eq(1).text().replace(/\D+/g, '');
+            var harvest_quest_in_minutes = (Number(harvest_quest_total) - Number(harvest_quest_current)) / Number(harvestsPerMin);
+            var harvest_quest_reduction = $('.numQuestH').next().find('span').text();
+            var time_for_harvest_quest_formatted;
 
-            tfqh = Math.floor(((timeForHarvQuest * 10) / 10));
-            tfqh = Math.floor(tfqh - (tfqh * (hQuestReduction / 100)));
+            time_for_harvest_quest_formatted = Math.floor(((harvest_quest_in_minutes * 10) / 10));
+            time_for_harvest_quest_formatted = Math.floor(time_for_harvest_quest_formatted - (time_for_harvest_quest_formatted * (harvest_quest_reduction / 100)));
             // if quest timer is below 60, use minutes
-            if (tfqh < 60) {
-                $('.minsToHarvestQuest').text("Around " + (tfqh).toString() + " minutes left.");
+            if (time_for_harvest_quest_formatted < 60) {
+                $('.minsToHarvestQuest').text("Around " + (time_for_harvest_quest_formatted).toString() + " minutes left.");
             }
             // if quest timer is above 59, use hours and minutes.
-            else if (tfqh > 59) {
-                var hourz = ((tfqh - (tfqh % 60)) / 60);
-                tfqh = (tfqh - (hourz * 60));
-                $('.minsToHarvestQuest').text("Around " + (hourz).toString() + " hrs " + (tfqh).toString() + " minutes left.");
+            else if (time_for_harvest_quest_formatted > 59) {
+                var hourz = ((time_for_harvest_quest_formatted - (time_for_harvest_quest_formatted % 60)) / 60);
+                time_for_harvest_quest_formatted = (time_for_harvest_quest_formatted - (hourz * 60));
+                $('.minsToHarvestQuest').text("Around " + (hourz).toString() + " hrs " + (time_for_harvest_quest_formatted).toString() + " minutes left.");
             }
         }
 
