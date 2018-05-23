@@ -1154,19 +1154,19 @@ function timeCounter() {
 
         switch ($('#gainsXP').text().replace(/[0-9[&\/\\#,+()$~%.'":*?<>{}]/g, '')) {
           case "K":
-          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z]/g, '')) * 1000;
+          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z,]/g, '')) * 1000;
             break;
           case "M":
-          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z]/g, '')) * 1000000;
+          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z,]/g, '')) * 1000000;
             break;
           case "B":
-          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z]/g, '')) * 1000000000;
+          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z,]/g, '')) * 1000000000;
             break;
           case "T":
-          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z]/g, '')) * 1000000000000;
+          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z,]/g, '')) * 1000000000000;
             break;
           default:
-          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z]/g, ''));
+          battle_tracker_xp_gained = Number($('#gainsXP').text().replace(/[A-Z,]/g, ''));
         }
 
         var exp_remaining = level_cost_formatted - current_exp;
@@ -1174,16 +1174,6 @@ function timeCounter() {
         var total_in_seconds = exp_remaining / exp_per_second;
         var formatted_time = moment.duration(total_in_seconds, 'seconds').format('HH:mm:ss');
 
-        /// FOR TESTING, REMOVE IF I FORGET ////
-        console.log('formatted time '+ formatted_time);
-        console.log('total_in_seconds '+ total_in_seconds);
-        console.log('exp per battle '+ exp_per_battle);
-        console.log('time_h: '+time_h);
-        console.log('time_m: '+time_m);
-        console.log('time_s: '+ time_s);
-        console.log('total time: '+ total_time);
-        console.log('exp_per_second '+ exp_per_second);
-        //Custom edits by curbside for #honma
         var SI_PREFIXES = ["", "k", "M", "B", "T", "P", "E"];
 
         function abbreviateNumber(number) {
