@@ -186,6 +186,8 @@ function addTimeCounter() {
     $('#gainsClanResources').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg"><td>Avg XP</td><td id="avgXpGain" class="right"></td><td> </td></tr>');
     $('#gainsClanResources').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg"><td>Avg Res</td><td id="avgResGain" class="right"></td><td> </td></tr>');
 
+    $('#gainsCraftingBonuses').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="craftingActionsTimeToLevel" colspan="100%"></td></tr>');
+    $('#gainsCraftingBonuses').parent().after('<tr class="hidden-xs hidden-sm visible-md visible-lg" style="color: #' + perHourColor + '; font-size: ' + perHourSize + 'px"></td><td id="craftingActionsToLevel" colspan="100%"></td></tr>');
 }
 
 function addChatColorPicker() {
@@ -550,7 +552,43 @@ function parseAutocraftPhp(craft) {
 
         var craftingBoost = $('#crafting_boost_increase').text();
         craftingBoost = parseFloat(craftingBoost);
-        // console.log(craftingBoost);
+
+        var crafting_exp_gained = Number($('#gainsCraftingXP').text().replace(/,/g,''));
+        var crafting_attempt = Number($('#gainsCraftingAttempts').text());
+        var crafting_exp_required = Number($('#levelCost').attr('title').replace(/[A-Z,]/g, ''));
+        var crafting_exp_current = Number($('#currentXP').attr('title').replace(/[A-Z,]/g, ''));
+        var crafting_exp_to_level = Number(crafting_exp_required - crafting_exp_current);
+        var crafting_hour = Number($('#craftingBoxGains').find('.timeCounter').find('.timeCounterHr').text());
+        var crafting_minute = Number($('#craftingBoxGains').find('.timeCounter').find('.timeCounterMin').text());
+        var crafting_second = Number($('#craftingBoxGains').find('.timeCounter').find('.timeCounterSec').text());
+        var hour_in_seconds = crafting_hour * 3600;
+        var minute_in_seconds = crafting_minute * 60;
+        var crafting_time_in_seconds = hour_in_seconds + minute_in_seconds + crafting_second;
+        var exp_per_attempt = crafting_exp_gained / crafting_attempt;
+        /// # of crafts until crafter will level.
+        var crafts_to_level = crafting_exp_to_level / exp_per_attempt;
+
+        var crafting_exp_per_second =  crafting_exp_gained / crafting_time_in_seconds;
+
+        var time_in_seconds_to_level = crafting_exp_to_level / crafing_exp_per_second;
+
+
+        console.log('hour in seconds: '+ hour_in_seconds);
+        console.log('minute_in_seconds '+ minute_in_seconds);
+        console.log('crafting_second ' +crafting_second);
+        console.log('exp_per_attempt '+ exp_per_attempt);
+        console.log('crafting_time_in_seconds '+crafting_time_in_seconds);
+        console.log('crafts_to_level '+ crafts_to_level);
+        console.log('time_in_seconds_to_level '+ time_in_seconds_to_level);
+        $('#craftingActionsToLevel').text('Actions until level: ' +crafts_to_level.toString());
+
+        var formatted = moment.duration(time_in_seconds_to_level, 'seconds').format('HH:mm:ss');
+
+        if (formatted.indexOf('Invalid') > -1) {
+            $('#craftingActionsTimeToLevel').text('Estimated time: calculating');
+        } else {
+          $('#craftingActionsTimeToLevel').text('Time until level: ' + formatted);
+        }
     }
 }
 
@@ -945,6 +983,7 @@ function parseAutoTradePhp(harvest) {
 
         //estimated actions to level
         var totalXpToLevel = harvest.p[harvest.a.s].tnl;
+        
 
         var currentXp = harvest.p[harvest.a.s].xp;
         var actionsToLevel = (totalXpToLevel - currentXp) / avgXpGain;
@@ -1131,7 +1170,45 @@ function unique(list) {
 
 function timeCounter() {
     if (ENABLE_XP_GOLD_RESOURCE_PER_HOUR) {
+      //// crafting sections
 
+      var crafting_exp_gained = Number($('#gainsCraftingXP').text().replace(/,/g,''));
+      var crafting_attempt = Number($('#gainsCraftingAttempts').text());
+      var crafting_exp_required = Number($('#levelCost').attr('title').replace(/[A-Z,]/g, ''));
+      var crafting_exp_current = Number($('#currentXP').attr('title').replace(/[A-Z,]/g, ''));
+      var crafting_exp_to_level = Number(crafting_exp_required - crafting_exp_current);
+      var crafting_hour = Number($('#craftingBoxGains').find('.timeCounter').find('.timeCounterHr').text());
+      var crafting_minute = Number($('#craftingBoxGains').find('.timeCounter').find('.timeCounterMin').text());
+      var crafting_second = Number($('#craftingBoxGains').find('.timeCounter').find('.timeCounterSec').text());
+      var hour_in_seconds = crafting_hour * 3600;
+      var minute_in_seconds = crafting_minute * 60;
+      var crafting_time_in_seconds = hour_in_seconds + minute_in_seconds + crafting_second;
+      var exp_per_attempt = crafting_exp_gained / crafting_attempt;
+      /// # of crafts until crafter will level.
+      var crafts_to_level = crafting_exp_to_level / exp_per_attempt;
+
+      var crafting_exp_per_second =  crafting_exp_gained / crafting_time_in_seconds;
+
+      var time_in_seconds_to_level = crafting_exp_to_level / crafting_exp_per_second;
+
+
+      console.log('hour in seconds: '+ hour_in_seconds);
+      console.log('minute_in_seconds '+ minute_in_seconds);
+      console.log('crafting_second ' +crafting_second);
+      console.log('exp_per_attempt '+ exp_per_attempt);
+      console.log('crafting_time_in_seconds '+crafting_time_in_seconds);
+      console.log('crafts_to_level '+ crafts_to_level);
+      console.log('time_in_seconds_to_level '+ time_in_seconds_to_level);
+      $('#craftingActionsToLevel').text('Actions until level: ' + Math.floor(crafts_to_level).toString());
+
+      var formatted = moment.duration(time_in_seconds_to_level, 'seconds').format('HH:mm:ss');
+
+      if (formatted.indexOf('Invalid') > -1) {
+          $('#craftingActionsTimeToLevel').text('Estimated time: calculating');
+      } else {
+        $('#craftingActionsTimeToLevel').text('Time until level: ' + formatted);
+      }
+      /////
         //  Starting here grab the numbers required for calculating the # of battles until level
         var current_exp = $('#currentXP').attr('title').replace(/\D+/g, '');
         var level_cost = $('#levelCost').text().replace(/[^0-9\.]+/g, '');
