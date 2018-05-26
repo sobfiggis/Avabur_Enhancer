@@ -262,11 +262,11 @@ function addBattleTracker() {
 
 function addDropTracker() {
     // Add tracker content to the modal list
-    $('#modalWrapper').after('<div id="dropsTrackerWrapper" style="width: 700px;" class="container ui-element border2 ui-draggable customWindowWrapper"><div class="row"><h4 id="dropsTrackerTitle" class="center toprounder ui-draggable-handle">Drop Tracker</h4><span id="closeDropsTracker" class="closeCustomWindow"><a>×</a></span><div class="customWindowContent"><table id="dropsTable" class="table table-condensed table-bordered"><thead><tr id="dropsTableTimer"><th style="max-width: 95px;">Categories</th><th colspan="2">Kills: <span class="numKills">0</span></th><th colspan="2">Harvests: <span class="numHarvests">0</span></th><th colspan="2">Crafts: <span class="numCrafts">0</span></th><th colspan="2">Carves: <span class="numCarves">0</span></th><th class="timeCounter" title="' + Date.now() + '" style="max-width: 80px;"><span class="timeCounterHr">00</span>:<span class="timeCounterMin">00</span>:<span class="timeCounterSec">00</span></th></tr></thead><tbody><tr><td>Stats</td><td class="numStatsK">0</td><td><span class="percent" data-n="numStatsK" data-d="numKills">0.00</span> %</td><td class="numStatsH">0</td><td><span class="percent" data-n="numStatsH" data-d="numHarvests">0.00</span> %</td><td class="numStatsCr">0</td><td><span class="percent" data-n="numStatsCr" data-d="numCrafts">0.00</span> %</td><td class="numStatsCa">0</td><td><span class="percent" data-n="numStatsCa" data-d="numCarves">0.00</span> %</td><td id="statsPerHr"></td></tr><tr><td>Loot</td><td class="numLootK">0</td><td><span class="percent" data-n="numLootK" data-d="numKills">0.00</span> %</td><td class="numLootH">0</td><td><span class="percent" data-n="numLootH" data-d="numHarvests">0.00</span> %</td><td class="numLootCr">0</td><td><span class="percent" data-n="numLootCr" data-d="numCrafts">0.00</span> %</td><td class="numLootCa">0</td><td><span class="percent" data-n="numLootCa" data-d="numCarves">0.00</span> %</td><td id="lootPerHr"></td></tr><tr><td>Ingredients</td><td class="numIngredientsK">0</td><td><span class="percent" data-n="numIngredientsK" data-d="numKills">0.00</span> %</td><td class="numIngredientsH">0</td><td><span class="percent" data-n="numIngredientsH" data-d="numHarvests">0.00</span> %</td><td class="numIngredientsCr">0</td><td><span class="percent" data-n="numIngredientsCr" data-d="numCrafts">0.00</span> %</td><td class="numIngredientsCa">0</td><td><span class="percent" data-n="numIngredientsCa" data-d="numCarves">0.00</span> %</td><td id="ingredientsPerHr"></td></tr><tr><td>Locket Quest Proc</td><td class="numQuestK">0</td><td><span class="percent" data-n="numQuestK" data-d="numKills">0.00</span>%</td><td class="numQuestH">0</td><td><span class="percent" data-n="numQuestH" data-d="numHarvests">0.00</span> %</td><td class="numQuestCr">0</td><td><span class="percent" data-n="numQuestCr" data-d="numCrafts">0.00</span> %</td><td class="numQuestCa">0</td><td><span class="percent" data-n="numQuestCa" data-d="numCarves">0.00</span> %</td><td id="LocketQuestPerHr"></td></tr><tr><td>Quest Items</td><td class="itemQuestK">0</td><td><span class="percent" data-n="itemQuestK" data-d="numKills">0.00</span>%</td><td class="itemQuestH">0</td><td><span class="percent" data-n="itemQuestH" data-d="numHarvests">0.00</span> %</td><td class="itemQuestCr">0</td><td><span class="percent" data-n="itemQuestCr" data-d="numCrafts">0.00</span> %</td><td class="itemQuestCa">0</td><td><span class="percent" data-n="itemQuestCa" data-d="numCarves">0.00</span> %</td><td id="qItemPerHr"></td></tr><tr><td>Total Platinum</td><td></td><td><span class="platTotalK">0</span></td><td></td><td><span class="platTotalH">0</span></td><td></td><td><span class="platTotalCr">0</span></td><td></td><td><span class="platTotalCa">0</span></td><td id="platHour"></td></tr></tbody><thead><tr><th>Stats</th><th colspan="2">K Stats: <span class="numStatsK">0</span></th><th colspan="2">H Stats: <span class="numStatsH">0</span></th><th colspan="2">Cr Stats: <span class="numStatsCr">0</span></th><th colspan="2">Ca Stats: <span class="numStatsCa">0</span></th><td><a id="resetDropTable">Reset</a></td></tr></thead><tbody><tr><td>Strength</td><td class="strK">0</td><td><span class="percent" data-n="strK" data-d="numStatsK">0.00</span> %</td><td class="strH">0</td><td><span class="percent" data-n="strH" data-d="numStatsH">0.00</span> %</td><td class="strCr">0</td><td><span class="percent" data-n="strCr" data-d="numStatsCr">0.00</span> %</td><td class="strCa">0</td><td><span class="percent" data-n="strCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Health</td><td class="heaK">0</td><td><span class="percent" data-n="heaK" data-d="numStatsK">0.00</span> %</td><td class="heaH">0</td><td><span class="percent" data-n="heaH" data-d="numStatsH">0.00</span> %</td><td class="heaCr">0</td><td><span class="percent" data-n="heaCr" data-d="numStatsCr">0.00</span> %</td><td class="heaCa">0</td><td><span class="percent" data-n="heaCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Coordination</td><td class="coordK">0</td><td><span class="percent" data-n="coordK" data-d="numStatsK">0.00</span> %</td><td class="coordH">0</td><td><span class="percent" data-n="coordH" data-d="numStatsH">0.00</span> %</td><td class="coordCr">0</td><td><span class="percent" data-n="coordCr" data-d="numStatsCr">0.00</span> %</td><td class="coordCa">0</td><td><span class="percent" data-n="coordCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Agility</td><td class="agiK">0</td><td><span class="percent" data-n="agiK" data-d="numStatsK">0.00</span> %</td><td class="agiH">0</td><td><span class="percent" data-n="agiH" data-d="numStatsH">0.00</span> %</td><td class="agiCr">0</td><td><span class="percent" data-n="agiCr" data-d="numStatsCr">0.00</span> %</td><td class="agiCa">0</td><td><span class="percent" data-n="agiCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Counter</td><td class="counterK">0</td><td><span class="percent" data-n="counterK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Healing</td><td class="healingK">0</td><td><span class="percent" data-n="healingK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Weapon</td><td class="weaponK">0</td><td><span class="percent" data-n="weaponK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Evasion</td><td class="evasionK">0</td><td><span class="percent" data-n="evasionK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody><thead><tr><th>Loot</th><th colspan="2">K Loot: <span class="numLootK">0</span></th><th colspan="2">H Loot: <span class="numLootH">0</span></th><th colspan="2">Cr Loot: <span class="numLootCr">0</span></th><th colspan="2">Ca Loot: <span class="numLootCa">0</span></th></tr></thead><tbody><tr><td>Gear & Gems</td><td class="gearK">0</td><td><span class="percent" data-n="gearK" data-d="numLootK">0.00</span> %</td><td class="gearH">0</td><td><span class="percent" data-n="gearH" data-d="numLootH">0.00</span> %</td><td class="gearCr">0</td><td><span class="percent" data-n="gearCr" data-d="numLootCr">0.00</span> %</td><td class="gearCa">0</td><td><span class="percent" data-n="gearCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Gold</td><td class="goldK">0</td><td><span class="percent" data-n="goldK" data-d="numLootK">0.00</span> %</td><td class="goldH">0</td><td><span class="percent" data-n="goldH" data-d="numLootH">0.00</span> %</td><td class="goldCr">0</td><td><span class="percent" data-n="goldCr" data-d="numLootCr">0.00</span> %</td><td class="goldCa">0</td><td><span class="percent" data-n="goldCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Platinum</td><td class="platK">0</td><td><span class="percent" data-n="platK" data-d="numLootK">0.00</span> %</td><td class="platH">0</td><td><span class="percent" data-n="platH" data-d="numLootH">0.00</span> %</td><td class="platCr">0</td><td><span class="percent" data-n="platCr" data-d="numLootCr">0.00</span> %</td><td class="platCa">0</td><td><span class="percent" data-n="platCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Crafting Mats</td><td class="craftK">0</td><td><span class="percent" data-n="craftK" data-d="numLootK">0.00</span> %</td><td class="craftH">0</td><td><span class="percent" data-n="craftH" data-d="numLootH">0.00</span> %</td><td class="craftCr">0</td><td><span class="percent" data-n="craftCr" data-d="numLootCr">0.00</span> %</td><td class="craftCa">0</td><td><span class="percent" data-n="craftCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Gem Fragment</td><td class="fragK">0</td><td><span class="percent" data-n="fragK" data-d="numLootK">0.00</span> %</td><td class="fragH">0</td><td><span class="percent" data-n="fragH" data-d="numLootH">0.00</span> %</td><td class="fragCr">0</td><td><span class="percent" data-n="fragCr" data-d="numLootCr">0.00</span> %</td><td class="fragCa">0</td><td><span class="percent" data-n="fragCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Crystals (lol)</td><td class="crystalK">0</td><td><span class="percent" data-n="crystalK" data-d="numLootK">0.00</span> %</td><td class="crystalH">0</td><td><span class="percent" data-n="crystalH" data-d="numLootH">0.00</span> %</td><td class="crystalCr">0</td><td><span class="percent" data-n="crystalCr" data-d="numLootCr">0.00</span> %</td><td class="crystalCa">0</td><td><span class="percent" data-n="crystalCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>RRoG Multidrop/DropBoost</td><td class="multidropK">0</td><td><span class="percent" data-n="multidropK" data-d="numLootK">0.00</span> %</td><td class="multidropH">0</td><td><span class="percent" data-n="multidropH" data-d="numLootH">0.00</span> %</td><td class="multidropCr">0</td><td><span class="percent" data-n="multidropCr" data-d="numLootCr">0.00</span> %</td><td class="multidropCa">0</td><td><span class="percent" data-n="multidropCa" data-d="numLootCa">0.00</span> %</td></tr></tbody></table></div></div></div>');
+    $('#modalWrapper').after('<div id="dropsTrackerWrapper" style="width: 700px;" class="container ui-element border2 ui-draggable customWindowWrapper"><div class="row"><h4 id="dropsTrackerTitle" class="center toprounder ui-draggable-handle">Drop Tracker</h4><span id="closeDropsTracker" class="closeCustomWindow"><a>×</a></span><div class="customWindowContent"><table id="dropsTable" class="table table-condensed table-bordered"><thead><tr id="dropsTableTimer"><th style="max-width: 95px;">Categories</th><th colspan="2">Kills: <span class="numKills">0</span></th><th colspan="2">Harvests: <span class="numHarvests">0</span></th><th colspan="2">Crafts: <span class="numCrafts">0</span></th><th colspan="2">Carves: <span class="numCarves">0</span></th><th class="timeCounter" title="' + Date.now() + '" style="max-width: 80px;"><span class="timeCounterHr">00</span>:<span class="timeCounterMin">00</span>:<span class="timeCounterSec">00</span></th></tr></thead><tbody><tr><td>Stats</td><td class="numStatsK">0</td><td><span class="percent" data-n="numStatsK" data-d="numKills">0.00</span> %</td><td class="numStatsH">0</td><td><span class="percent" data-n="numStatsH" data-d="numHarvests">0.00</span> %</td><td class="numStatsCr">0</td><td><span class="percent" data-n="numStatsCr" data-d="numCrafts">0.00</span> %</td><td class="numStatsCa">0</td><td><span class="percent" data-n="numStatsCa" data-d="numCarves">0.00</span> %</td><td id="statsPerHr"></td></tr><tr><td>Loot</td><td class="numLootK">0</td><td><span class="percent" data-n="numLootK" data-d="numKills">0.00</span> %</td><td class="numLootH">0</td><td><span class="percent" data-n="numLootH" data-d="numHarvests">0.00</span> %</td><td class="numLootCr">0</td><td><span class="percent" data-n="numLootCr" data-d="numCrafts">0.00</span> %</td><td class="numLootCa">0</td><td><span class="percent" data-n="numLootCa" data-d="numCarves">0.00</span> %</td><td id="lootPerHr"></td></tr><tr><td>Ingredients</td><td class="numIngredientsK">0</td><td><span class="percent" data-n="numIngredientsK" data-d="numKills">0.00</span> %</td><td class="numIngredientsH">0</td><td><span class="percent" data-n="numIngredientsH" data-d="numHarvests">0.00</span> %</td><td class="numIngredientsCr">0</td><td><span class="percent" data-n="numIngredientsCr" data-d="numCrafts">0.00</span> %</td><td class="numIngredientsCa">0</td><td><span class="percent" data-n="numIngredientsCa" data-d="numCarves">0.00</span> %</td><td id="ingredientsPerHr"></td></tr><tr><td>Locket Quest Proc</td><td class="numQuestK">0</td><td><span class="percent" data-n="numQuestK" data-d="numKills">0.00</span>%</td><td class="numQuestH">0</td><td><span class="percent" data-n="numQuestH" data-d="numHarvests">0.00</span> %</td><td class="numQuestCr">0</td><td><span class="percent" data-n="numQuestCr" data-d="numCrafts">0.00</span> %</td><td class="numQuestCa">0</td><td><span class="percent" data-n="numQuestCa" data-d="numCarves">0.00</span> %</td><td id="LocketQuestPerHr"></td></tr><tr><td>Quest Items</td><td class="itemQuestK">0</td><td><span class="percent" data-n="itemQuestK" data-d="numKills">0.00</span>%</td><td class="itemQuestH">0</td><td><span class="percent" data-n="itemQuestH" data-d="numHarvests">0.00</span> %</td><td class="itemQuestCr">0</td><td><span class="percent" data-n="itemQuestCr" data-d="numCrafts">0.00</span> %</td><td class="itemQuestCa">0</td><td><span class="percent" data-n="itemQuestCa" data-d="numCarves">0.00</span> %</td><td id="qItemPerHr"></td></tr><tr><td>Total Platinum</td><td></td><td><span class="platTotalK">0</span></td><td></td><td><span class="platTotalH">0</span></td><td></td><td><span class="platTotalCr">0</span></td><td></td><td><span class="platTotalCa">0</span></td><td id="platHour"></td></tr></tbody><thead><tr><th>Stats</th><th colspan="2">K Stats: <span class="numStatsK">0</span></th><th colspan="2">H Stats: <span class="numStatsH">0</span></th><th colspan="2">Cr Stats: <span class="numStatsCr">0</span></th><th colspan="2">Ca Stats: <span class="numStatsCa">0</span></th><td><a id="resetDropTable">Reset</a></td></tr></thead><tbody><tr><td>Strength</td><td class="strK">0</td><td><span class="percent" data-n="strK" data-d="numStatsK">0.00</span> %</td><td class="strH">0</td><td><span class="percent" data-n="strH" data-d="numStatsH">0.00</span> %</td><td class="strCr">0</td><td><span class="percent" data-n="strCr" data-d="numStatsCr">0.00</span> %</td><td class="strCa">0</td><td><span class="percent" data-n="strCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Health</td><td class="heaK">0</td><td><span class="percent" data-n="heaK" data-d="numStatsK">0.00</span> %</td><td class="heaH">0</td><td><span class="percent" data-n="heaH" data-d="numStatsH">0.00</span> %</td><td class="heaCr">0</td><td><span class="percent" data-n="heaCr" data-d="numStatsCr">0.00</span> %</td><td class="heaCa">0</td><td><span class="percent" data-n="heaCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Coordination</td><td class="coordK">0</td><td><span class="percent" data-n="coordK" data-d="numStatsK">0.00</span> %</td><td class="coordH">0</td><td><span class="percent" data-n="coordH" data-d="numStatsH">0.00</span> %</td><td class="coordCr">0</td><td><span class="percent" data-n="coordCr" data-d="numStatsCr">0.00</span> %</td><td class="coordCa">0</td><td><span class="percent" data-n="coordCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Agility</td><td class="agiK">0</td><td><span class="percent" data-n="agiK" data-d="numStatsK">0.00</span> %</td><td class="agiH">0</td><td><span class="percent" data-n="agiH" data-d="numStatsH">0.00</span> %</td><td class="agiCr">0</td><td><span class="percent" data-n="agiCr" data-d="numStatsCr">0.00</span> %</td><td class="agiCa">0</td><td><span class="percent" data-n="agiCa" data-d="numStatsCa">0.00</span> %</td></tr><tr><td>Counter</td><td class="counterK">0</td><td><span class="percent" data-n="counterK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Healing</td><td class="healingK">0</td><td><span class="percent" data-n="healingK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Weapon</td><td class="weaponK">0</td><td><span class="percent" data-n="weaponK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Evasion</td><td class="evasionK">0</td><td><span class="percent" data-n="evasionK" data-d="numStatsK">0.00</span> %</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody><thead><tr><th>Loot</th><th colspan="2">K Loot: <span class="numLootK">0</span></th><th colspan="2">H Loot: <span class="numLootH">0</span></th><th colspan="2">Cr Loot: <span class="numLootCr">0</span></th><th colspan="2">Ca Loot: <span class="numLootCa">0</span></th></tr></thead><tbody><tr><td>Gear & Gems</td><td class="gearK">0</td><td><span class="percent" data-n="gearK" data-d="numLootK">0.00</span> %</td><td class="gearH">0</td><td><span class="percent" data-n="gearH" data-d="numLootH">0.00</span> %</td><td class="gearCr">0</td><td><span class="percent" data-n="gearCr" data-d="numLootCr">0.00</span> %</td><td class="gearCa">0</td><td><span class="percent" data-n="gearCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Gold</td><td class="goldK">0</td><td><span class="percent" data-n="goldK" data-d="numLootK">0.00</span> %</td><td class="goldH">0</td><td><span class="percent" data-n="goldH" data-d="numLootH">0.00</span> %</td><td class="goldCr">0</td><td><span class="percent" data-n="goldCr" data-d="numLootCr">0.00</span> %</td><td class="goldCa">0</td><td><span class="percent" data-n="goldCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Platinum</td><td class="platK">0</td><td><span class="percent" data-n="platK" data-d="numLootK">0.00</span> %</td><td class="platH">0</td><td><span class="percent" data-n="platH" data-d="numLootH">0.00</span> %</td><td class="platCr">0</td><td><span class="percent" data-n="platCr" data-d="numLootCr">0.00</span> %</td><td class="platCa">0</td><td><span class="percent" data-n="platCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Crafting Mats</td><td class="craftK">0</td><td><span class="percent" data-n="craftK" data-d="numLootK">0.00</span> %</td><td class="craftH">0</td><td><span class="percent" data-n="craftH" data-d="numLootH">0.00</span> %</td><td class="craftCr">0</td><td><span class="percent" data-n="craftCr" data-d="numLootCr">0.00</span> %</td><td class="craftCa">0</td><td><span class="percent" data-n="craftCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Gem Fragment</td><td class="fragK">0</td><td><span class="percent" data-n="fragK" data-d="numLootK">0.00</span> %</td><td class="fragH">0</td><td><span class="percent" data-n="fragH" data-d="numLootH">0.00</span> %</td><td class="fragCr">0</td><td><span class="percent" data-n="fragCr" data-d="numLootCr">0.00</span> %</td><td class="fragCa">0</td><td><span class="percent" data-n="fragCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>Crystals (lol)</td><td class="crystalK">0</td><td><span class="percent" data-n="crystalK" data-d="numLootK">0.00</span> %</td><td class="crystalH">0</td><td><span class="percent" data-n="crystalH" data-d="numLootH">0.00</span> %</td><td class="crystalCr">0</td><td><span class="percent" data-n="crystalCr" data-d="numLootCr">0.00</span> %</td><td class="crystalCa">0</td><td><span class="percent" data-n="crystalCa" data-d="numLootCa">0.00</span> %</td></tr><tr><td>RRoG Multidrop</td><td class="multidrop">0</td><td><span class="percent" data-n="multidrop" data-d="numLootK">0.00</span> %</td></tr></tbody></table></div></div></div>');
     $('#resetDropTable').on('click', function() {
         $('#dropsTableTimer .timeCounter').attr('title', Date.now());
         $('#dropsTableTimer .timeCounter>span').text('00');
-        $('.numKills, .numHarvests, .numStatsK, .numStatsH, .numLootK, .numLootH, .numIngredientsK, .numIngredientsH, .strK, .strH, .strCr, .strCa, .heaK, .heaH, .heaCr, .heaCa, .coordK, .coordH, .coordCr, .coordCa, .agiK, .agiH, .agiCr, .agiCa, .counterK, .healingK, .weaponK, .evasionK, .gearK, .gearH, .gearCr, .gearCa, .goldK, .goldH, .goldCr, .goldCa, .platK, .platH, .craftK, .craftH, .craftCr, .craftCa, .fragK, .fragH, .fragCr, .fragCa, .crystalK, .crystalH, .crystalCr, .crystalCa, .numQuestH, .numQuestK, .numQuestCr, .numQuestCa, .itemQuestH, .itemQuestK, .itemQuestCr, .itemQuestCa, .platTotalK, .platTotalH, .numCrafts, .numStatsCr, .numStatsCa, .platCr, .platCa, .platTotalCr, .platTotalCa, .numLootCr, .numLootCa, .numIngredientsC, .multidropK, .multidropH, .multidropCa, .multidropCr').text('0');
+        $('.numKills, .numHarvests, .numStatsK, .numStatsH, .numLootK, .numLootH, .numIngredientsK, .numIngredientsH, .strK, .strH, .strCr, .strCa, .heaK, .heaH, .heaCr, .heaCa, .coordK, .coordH, .coordCr, .coordCa, .agiK, .agiH, .agiCr, .agiCa, .counterK, .healingK, .weaponK, .evasionK, .gearK, .gearH, .gearCr, .gearCa, .goldK, .goldH, .goldCr, .goldCa, .platK, .platH, .craftK, .craftH, .craftCr, .craftCa, .fragK, .fragH, .fragCr, .fragCa, .crystalK, .crystalH, .crystalCr, .crystalCa, .numQuestH, .numQuestK, .numQuestCr, .numQuestCa, .itemQuestH, .itemQuestK, .itemQuestCr, .itemQuestCa, .platTotalK, .platTotalH, .numCrafts, .numStatsCr, .numStatsCa, .platCr, .platCa, .platTotalCr, .platTotalCa, .numLootCr, .numLootCa, .numIngredientsC, .multidrop').text('0');
         $('.percent').text('0.00');
     });
 
@@ -550,27 +550,6 @@ function parseAutocraftPhp(craft) {
 
         calcPercentCells();
 
-        if ($('#craftDropResult > span').length > 1) {
-
-          var len = Number($('#craftDropResult > span').length) * 2;
-          var craft_multi_drops = 0;
-
-          for (var i=0; i<len;i+=2) {
-            if (i>1) {
-              if ($('#craftDropResult').find('span:nth-child('+i+')').attr('class') !== 'itemWithTooltip') {
-                craft_multi_drops+= 1;
-              }
-            }
-          }
-
-          if (craft_multi_drops > 0) {
-            while (craft_multi_drops > 0) {
-              incrementCell('multidropCr')
-              craft_multi_drops--;
-            }
-          }
-        }
-
         var craftingBoost = $('#crafting_boost_increase').text();
         craftingBoost = parseFloat(craftingBoost);
 
@@ -593,6 +572,14 @@ function parseAutocraftPhp(craft) {
 
         var time_in_seconds_to_level = crafting_exp_to_level / crafing_exp_per_second;
 
+
+        console.log('hour in seconds: '+ hour_in_seconds);
+        console.log('minute_in_seconds '+ minute_in_seconds);
+        console.log('crafting_second ' +crafting_second);
+        console.log('exp_per_attempt '+ exp_per_attempt);
+        console.log('crafting_time_in_seconds '+crafting_time_in_seconds);
+        console.log('crafts_to_level '+ crafts_to_level);
+        console.log('time_in_seconds_to_level '+ time_in_seconds_to_level);
         $('#craftingActionsToLevel').text('Actions until level: ' +crafts_to_level.toString());
 
         var formatted = moment.duration(time_in_seconds_to_level, 'seconds').format('HH:mm:ss');
@@ -689,27 +676,6 @@ function parseAutocarvePhp(carve) {
 
         calcPercentCells();
 
-        if ($('#carveDropResult > span').length > 1) {
-
-          var len = Number($('#carveDropResult > span').length) * 2;
-          var carve_multi_drops = 0;
-
-          for (var i=0; i<len;i+=2) {
-            if (i>1) {
-              if ($('#carveDropResult').find('span:nth-child('+i+')').attr('class') !== 'itemWithTooltip') {
-                carve_multi_drops+= 1;
-              }
-            }
-          }
-
-          if (carve_multi_drops > 0) {
-            while (carve_multi_drops > 0) {
-              incrementCell('multidropCa');
-              carve_multi_drops--;
-            }
-          }
-        }
-
         // var craftingBoost = $('#crafting_boost_increase').text();
         // craftingBoost = parseFloat(craftingBoost);
         // console.log(craftingBoost);
@@ -799,7 +765,6 @@ function parseAutobattlePhp(battle) {
                     incrementC(id, battle.b.sr.stats[statKey]);
                 }
             }
-        }
 
 
 
@@ -839,26 +804,21 @@ function parseAutobattlePhp(battle) {
                 }
                 incrementCell(id);
             });
-        }
-        calcPercentCells();
-        
-        if ($('#battleDropResult > span').length > 1) {
+          }
+          calcPercentCells();
+            if ($('#battleDropResult > span').length > 1) {
 
-          var len = Number($('#battleDropResult > span').length) * 2;
-          var multi_drops = 0;
+            var len = Number($('#battleDropResult > span').length) * 2;
+            var mutli_drops = 0;
 
-          for (var i=0; i<len;i+=2) {
-            if (i>1) {
+            for (var i=1; i<len;i+=2) {
               if ($('#battleDropResult').find('span:nth-child('+i+')').attr('class') !== 'itemWithTooltip') {
-                multi_drops+= 1;
+                mutli_drops+= 1;
               }
             }
-          }
 
-          if (multi_drops > 0) {
-            while (multi_drops > 0) {
-              incrementCell('multidropK');
-              multi_drops--;
+            if (mutli_drops > 0) {
+              incrementCell('multidrop');
             }
           }
         }
@@ -1037,7 +997,7 @@ function parseAutoTradePhp(harvest) {
 
         //estimated actions to level
         var totalXpToLevel = harvest.p[harvest.a.s].tnl;
-        
+
 
         var currentXp = harvest.p[harvest.a.s].xp;
         var actionsToLevel = (totalXpToLevel - currentXp) / avgXpGain;
@@ -1059,7 +1019,7 @@ function parseAutoTradePhp(harvest) {
 
         var seconds_difference = Math.round((Date.now() - Number($('#tradeskillGains .timeCounter').first().attr('title'))) / 1000);
         var formatted = moment.duration(total_in_seconds, 'seconds').format('HH:mm:ss');
-
+        console.log(formatted);
         if (formatted.indexOf('Invalid') > -1) {
             $('#actionsTimeToLevel').text('Estimated time: calculating');
         } else {
@@ -1152,26 +1112,6 @@ function parseAutoTradePhp(harvest) {
 
         }
         calcPercentCells();
-        if ($('#harvestDropResult > span').length > 1) {
-
-          var len = Number($('#harvestDropResult > span').length) * 2;
-          var harvest_multi_drops = 0;
-
-          for (var i=0; i<len;i+=2) {
-            if (i>1) {
-              if ($('#harvestDropResult').find('span:nth-child('+i+')').attr('class') !== 'itemWithTooltip') {
-                harvest_multi_drops+= 1;
-              }
-            }
-          }
-
-          if (harvest_multi_drops > 0) {
-            while (harvest_multi_drops > 0) {
-              incrementCell('multidropH');
-              harvest_multi_drops--;
-            }
-          }
-        }
     }
 }
 
@@ -1336,12 +1276,12 @@ function timeCounter() {
         $('#clanGoldPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanGold').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
         $('#resPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsResources').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
         $('#clanResPerHr').text(abbreviateNumber(Math.floor(Number($('#gainsClanResources').attr('data-value')) / (seconds_difference / 3600))).toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + "/Hr");
-    
+
 
 
         /**
-         * @description display battle stats. 
-         * 
+         * @description display battle stats.
+         *
          * Kills until level & Time until levle.
          */
 
