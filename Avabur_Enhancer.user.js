@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.9
+// @version      1.0.10
 // @description  Tracks certain data within the game to create additional features and calculate additional information.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPhoenix, Reltorakii
 // @match        https://*.avabur.com/game*
@@ -485,35 +485,39 @@ function parseAutocraftPhp(craft) {
         }
 
         if (craft.a.sr) {
-            for (var statKey in craft.a.sr.stats) {
-                var id = "";
-                switch (statKey) {
-                    case 'strength':
-                        id = 'strCr';
-                        break;
-                    case 'health':
-                        id = 'heaCr';
-                        break;
-                    case 'coordination':
-                        id = 'coordCr';
-                        break;
-                    case 'agility':
-                        id = 'agiCr';
-                        break;
-                    default:
-                        console.log('unknown crafting stat drop type', statKey);
-                }
+            for (var dropTypeKey in craft.a.sr.stats) {
+                for (var statKey in craft.a.sr.stats[dropTypeKey]) {
+                    var id = "";
+                    var count = craft.a.sr.stats[dropTypeKey][statKey];
+                    switch (statKey) {
+                        case 'strength':
+                            id = 'strCr';
+                            break;
+                        case 'health':
+                            id = 'heaCr';
+                            break;
+                        case 'coordination':
+                            id = 'coordCr';
+                            break;
+                        case 'agility':
+                            id = 'agiCr';
+                            break;
+                        default:
+                            console.log('unknown crafting stat drop type', statKey, dropTypeKey);
+                    }
 
-                if (id) {
-                    incrementC('numStatsCr', craft.a.sr.stats[statKey]);
-                    incrementC(id, craft.a.sr.stats[statKey]);
+                    if (id) {
+                        incrementC('numStatsCr', count);
+                        incrementC(id, count);
+                    }
                 }
             }
         }
 
 
         if (craft.a.dr && craft.a.dr.drop) {
-            var dropSplit = craft.a.dr.drop.split("<br/>");
+            var withoutMultis = craft.a.dr.drop.replace('[DB]', '').replace('[MC]', '');
+            var dropSplit = withoutMultis.split("<br/>");
 
             dropSplit.forEach(function(singleDrop) {
                 if (singleDrop.indexOf("platinum coin") > -1) {
@@ -624,35 +628,39 @@ function parseAutocarvePhp(carve) {
         }
 
         if (carve.a.sr) {
-            for (var statKey in carve.a.sr.stats) {
-                var id = "";
-                switch (statKey) {
-                    case 'strength':
-                        id = 'strCa';
-                        break;
-                    case 'health':
-                        id = 'heaCa';
-                        break;
-                    case 'coordination':
-                        id = 'coordCa';
-                        break;
-                    case 'agility':
-                        id = 'agiCa';
-                        break;
-                    default:
-                        console.log('unknown carving stat drop type', statKey);
-                }
+            for (var dropTypeKey in carve.a.sr.stats) {
+                for (var statKey in carve.a.sr.stats[dropTypeKey]) {
+                    var id = "";
+                    var count = carve.a.sr.stats[dropTypeKey][statKey];
+                    switch (statKey) {
+                        case 'strength':
+                            id = 'strCa';
+                            break;
+                        case 'health':
+                            id = 'heaCa';
+                            break;
+                        case 'coordination':
+                            id = 'coordCa';
+                            break;
+                        case 'agility':
+                            id = 'agiCa';
+                            break;
+                        default:
+                            console.log('unknown carving stat drop type', statKey);
+                    }
 
-                if (id) {
-                    incrementC('numStatsCa', carve.a.sr.stats[statKey]);
-                    incrementC(id, carve.a.sr.stats[statKey]);
+                    if (id) {
+                        incrementC('numStatsCa', count);
+                        incrementC(id, count);
+                    }
                 }
             }
         }
 
 
         if (carve.a.dr && carve.a.dr.drop) {
-            var dropSplit = carve.a.dr.drop.split("<br/>");
+            var withoutMultis = craft.a.dr.drop.replace('[DB]', '').replace('[MC]', '');
+            var dropSplit = withoutMultis.split("<br/>");
 
             dropSplit.forEach(function(singleDrop) {
                 if (singleDrop.indexOf("platinum coin") > -1) {
@@ -760,43 +768,46 @@ function parseAutobattlePhp(battle) {
             incrementCell('numIngredientsK');
 
         if (battle.b.sr) {
-            for (var statKey in battle.b.sr.stats) {
-                var id = "";
-                switch (statKey) {
-                    case 'strength':
-                        id = 'strK';
-                        break;
-                    case 'health':
-                        id = 'heaK';
-                        break;
-                    case 'coordination':
-                        id = 'coordK';
-                        break;
-                    case 'agility':
-                        id = 'agiK';
-                        break;
-                    case 'counter_attack':
-                        id = 'counterK';
-                        break;
-                    case 'healing':
-                        id = 'healingK';
-                        break;
-                    case 'evasion':
-                        id = 'evasionK';
-                        break;
-                    case 'unarmed_combat':
-                    case 'melee_weapons':
-                    case 'ranged_weapons':
-                    case 'magical_weapons':
-                        id = 'weaponK';
-                        break;
-                    default:
-                        console.log('unknown battle stat drop type', statKey);
-                }
+            for (var dropTypeKey in battle.b.sr.stats) {
+                for (var statKey in battle.b.sr.stats[dropTypeKey]) {
+                    var id = "";
+                    var count = battle.b.sr.stats[dropTypeKey][statKey];
+                    switch (statKey) {
+                        case 'strength':
+                            id = 'strK';
+                            break;
+                        case 'health':
+                            id = 'heaK';
+                            break;
+                        case 'coordination':
+                            id = 'coordK';
+                            break;
+                        case 'agility':
+                            id = 'agiK';
+                            break;
+                        case 'counter_attack':
+                            id = 'counterK';
+                            break;
+                        case 'healing':
+                            id = 'healingK';
+                            break;
+                        case 'evasion':
+                            id = 'evasionK';
+                            break;
+                        case 'unarmed_combat':
+                        case 'melee_weapons':
+                        case 'ranged_weapons':
+                        case 'magical_weapons':
+                            id = 'weaponK';
+                            break;
+                        default:
+                            console.log('unknown battle stat drop type', statKey, dropTypeKey);
+                    }
 
-                if (id) {
-                    incrementC('numStatsK', battle.b.sr.stats[statKey]);
-                    incrementC(id, battle.b.sr.stats[statKey]);
+                    if (id) {
+                        incrementC('numStatsK', count);
+                        incrementC(id, count);
+                    }
                 }
             }
         }
@@ -805,7 +816,8 @@ function parseAutobattlePhp(battle) {
 
         // This means loot has dropped
         if (battle.b.dr && battle.b.dr.drop) {
-            var dropSplit = battle.b.dr.drop.split("<br/>");
+            var withoutMultis = battle.b.dr.drop.replace('[DB]', '').replace('[MC]', '');
+            var dropSplit = withoutMultis.split("<br/>");
 
             dropSplit.forEach(function(singleDrop) {
                 // this counts platinum coin drops and platinum coin totals!
@@ -1086,28 +1098,31 @@ function parseAutoTradePhp(harvest) {
         }
 
         if (harvest.a.sr) {
-            for (var statKey in harvest.a.sr.stats) {
-                var id = "";
-                switch (statKey) {
-                    case 'strength':
-                        id = 'strH';
-                        break;
-                    case 'health':
-                        id = 'heaH';
-                        break;
-                    case 'coordination':
-                        id = 'coordH';
-                        break;
-                    case 'agility':
-                        id = 'agiH';
-                        break;
-                    default:
-                        console.log('unknown harvest stat drop type', statKey);
-                }
+            for (var dropTypeKey in harvest.a.sr.stats) {
+                for (var statKey in harvest.a.sr.stats[dropTypeKey]) {
+                    var id = "";
+                    var count = harvest.a.sr.stats[dropTypeKey][statKey];
+                    switch (statKey) {
+                        case 'strength':
+                            id = 'strH';
+                            break;
+                        case 'health':
+                            id = 'heaH';
+                            break;
+                        case 'coordination':
+                            id = 'coordH';
+                            break;
+                        case 'agility':
+                            id = 'agiH';
+                            break;
+                        default:
+                            console.log('unknown harvest stat drop type', statKey);
+                    }
 
-                if (id) {
-                    incrementC('numStatsH', harvest.a.sr.stats[statKey]);
-                    incrementC(id, harvest.a.sr.stats[statKey]);
+                    if (id) {
+                        incrementC('numStatsH', count);
+                        incrementC(id, count);
+                    }
                 }
             }
         }
@@ -1115,7 +1130,8 @@ function parseAutoTradePhp(harvest) {
 
         // This means loot has dropped
         if (harvest.a.dr && harvest.a.dr.drop) {
-            var dropSplit = harvest.a.dr.drop.split("<br/>");
+            var withoutMultis = harvest.a.dr.drop.replace('[DB]', '').replace('[MC]', '');
+            var dropSplit = withoutMultis.split("<br/>");
             dropSplit.forEach(function(singleDrop) {
                 // counts platinum coins found while harvesting
                 if (singleDrop.indexOf("platinum coins") > -1) {
