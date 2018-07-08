@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.10
+// @version      1.0.10.1
 // @description  Tracks certain data within the game to create additional features and calculate additional information.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPhoenix, Reltorakii
 // @match        https://*.avabur.com/game*
@@ -659,7 +659,7 @@ function parseAutocarvePhp(carve) {
 
 
         if (carve.a.dr && carve.a.dr.drop) {
-            var withoutMultis = craft.a.dr.drop.replace('[DB]', '').replace('[MC]', '');
+            var withoutMultis = carve.a.dr.drop.replace('[DB]', '').replace('[MC]', '');
             var dropSplit = withoutMultis.split("<br/>");
 
             dropSplit.forEach(function(singleDrop) {
