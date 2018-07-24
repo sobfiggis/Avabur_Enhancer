@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Avabur Enhancer
 // @namespace    https://github.com/sobfiggis/Avabur_Enhancer
-// @version      1.0.10.1
+// @version      1.0.10.2
 // @description  Tracks certain data within the game to create additional features and calculate additional information.
 // @author       Original Creator: Kajin. Contributors: Kaymo, WinterPhoenix, Reltorakii
 // @match        https://*.avabur.com/game*
