@@ -747,8 +747,8 @@ function parseAutobattlePhp(battle) {
             localStorage.LocDrops = JSON.stringify(drops);
         } else {
             console.log("No Web Storage support to track drops.");
-            $('#ingredientDropList').html(loadIngredientDropList());
         }
+        $('#ingredientDropList').html(loadIngredientDropList());
     }
 
     // Battle was won and Drop Tracker enabled
